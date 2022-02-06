@@ -3,24 +3,35 @@ package generators
 import (
 	"fmt"
 
+	"byvko.dev/repo/am-stats-dataprep-api/logs"
 	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
 )
 
-func GeneratePlayerCard(stats api.PlayerRawStats, options types.PlayerOptions) (types.StatsCard, error) {
-	// Player name
+func GeneratePlayerCard(stats *api.PlayerRawStats, options types.PlayerOptions) (types.StatsCard, error) {
+	if !options.WithClanTag && !options.WithName && !options.WithPins {
+		return types.StatsCard{}, fmt.Errorf("no options provided")
+	}
+
 	var contentElements []types.StatsBlockRowContent
-	contentElements = append(contentElements, types.StatsBlockRowContent{
-		Type:    types.ContentTypeText,
-		Content: stats.PlayerDetails.Name,
-	})
+	if options.WithName {
+		// Player name
+		contentElements = append(contentElements, types.StatsBlockRowContent{
+			Type:    types.ContentTypeText,
+			Content: stats.PlayerDetails.Name,
+		})
+	}
 
 	// Clan tag if it exists
-	if stats.PlayerDetails.ClanTag != "" {
+	if options.WithClanTag && stats.PlayerDetails.ClanTag != "" {
 		contentElements = append(contentElements, types.StatsBlockRowContent{
 			Type:    types.ContentTypeText,
 			Content: fmt.Sprintf("[%s]", stats.PlayerDetails.ClanTag),
 		})
+	}
+
+	if options.WithPins {
+		logs.Warning("GeneratePlayerCard: pins not implemented yet")
 	}
 
 	// Assemble the content

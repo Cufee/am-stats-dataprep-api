@@ -1,0 +1,14 @@
+{
+  "localized_hello": "Привет",
+  "localized_battles": "Бои",
+  "localized_winrate": "Победы",
+  "localized_winrate_with_battles": "Победы",
+
+  "localized_average_damage": "Ср. Урон",
+  "localized_damage_done": "Урон",
+
+  "localized_wn8_rating": "WN8",
+
+  "localized_rating_overview_title": "Рейтинговые Бои",
+  "localized_random_overview_title": "Случайные Бои"
+}

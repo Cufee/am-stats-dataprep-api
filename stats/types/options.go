@@ -1,6 +1,8 @@
 package types
 
 type Options struct {
+	Locale string `json:"locale"`
+
 	// Status icons
 	AccountStatus StatusIconsOptions
 
@@ -41,13 +43,16 @@ type PlayerOptions struct {
 	Include     bool
 	WithName    bool
 	WithClanTag bool
+	WithPins    bool
 }
 
 type OverviewOptions struct {
 	Include          bool
+	WithTitle        bool
 	WithLabels       bool
 	WithAllTimeStats bool
 	Blocks           []string
+	Type             string
 }
 
 type VehicleOptions struct {
@@ -57,5 +62,11 @@ type VehicleOptions struct {
 	WithVehicleName  bool
 	WithAllTimeStats bool
 	WithLabels       bool
+	Offset           int
 	Blocks           []string
 }
+
+const (
+	OverviewTypeRegular = "regular"
+	OverviewTypeRating  = "rating"
+)

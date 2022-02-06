@@ -3,13 +3,21 @@ package stats
 import (
 	"fmt"
 
+	"byvko.dev/repo/am-stats-dataprep-api/localization"
 	"byvko.dev/repo/am-stats-dataprep-api/logs"
 	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/generators"
 	types "byvko.dev/repo/am-stats-dataprep-api/stats/types"
 )
 
-func CompilePlayerStatsCards(stats api.PlayerRawStats, options types.Options) (types.StatsResponse, error) {
+func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (types.StatsResponse, error) {
+	if stats == nil {
+		return types.StatsResponse{}, fmt.Errorf("stats is nil")
+	}
+
+	// Localization
+	localizer := localization.InitLocalizer(localization.LocaleStringFromLanguage(options.Locale))
+
 	var response types.StatsResponse
 	var cards []types.StatsCard
 
@@ -49,35 +57,38 @@ func CompilePlayerStatsCards(stats api.PlayerRawStats, options types.Options) (t
 		cards = append(cards, playerCard)
 	}
 
-	if options.RatingBattles.Include {
-		ratingBattles, err := generators.GenerateOverviewCards(stats, options.RatingBattles)
+	if options.RatingBattles.Include && stats.SessionStats.BattlesRating > 0 {
+		ratingBattles, err := generators.GenerateOverviewCard(stats, options.RatingBattles, localizer)
 		if err != nil {
 			logs.Error("Failed to generate rating battles for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.RatingBattles")
 		}
-		cards = append(cards, ratingBattles...)
+		cards = append(cards, ratingBattles)
 	}
 
-	if options.RegularBattles.Include {
-		ratingBattles, err := generators.GenerateOverviewCards(stats, options.RegularBattles)
+	if options.RegularBattles.Include && stats.SessionStats.BattlesAll > 0 {
+		regularBattles, err := generators.GenerateOverviewCard(stats, options.RegularBattles, localizer)
 		if err != nil {
-			logs.Error("Failed to generate rating battles for %v: %v", stats.PlayerDetails.ID, err)
+			logs.Error("Failed to generate regular battles for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.RatingBattles")
 		}
-		cards = append(cards, ratingBattles...)
+		cards = append(cards, regularBattles)
 	}
 
-	if options.VehiclesFull.Include {
-		vehiclesFull, err := generators.GenerateVehiclesCards(stats, options.VehiclesFull)
+	var slimVehiclesOffset int = 0
+	if options.VehiclesFull.Include && len(stats.SessionStats.Vehicles) > 0 {
+		vehiclesFull, err := generators.GenerateVehiclesCards(stats, options.VehiclesFull, localizer)
 		if err != nil {
 			logs.Error("Failed to generate vehicles full for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.VehiclesFull")
 		}
 		cards = append(cards, vehiclesFull...)
+		slimVehiclesOffset = len(vehiclesFull)
 	}
 
-	if options.VehiclesSlim.Include {
-		vehiclesSlim, err := generators.GenerateVehiclesCards(stats, options.VehiclesSlim)
+	if options.VehiclesSlim.Include && len(stats.SessionStats.Vehicles) > options.VehiclesFull.Limit {
+		options.VehiclesFull.Offset = slimVehiclesOffset
+		vehiclesSlim, err := generators.GenerateVehiclesCards(stats, options.VehiclesSlim, localizer)
 		if err != nil {
 			logs.Error("Failed to generate vehicles slim for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.VehiclesSlim")

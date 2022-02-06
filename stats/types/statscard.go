@@ -32,10 +32,11 @@ type StatsBlockRow struct {
 	Content []StatsBlockRowContent `json:"content"`
 }
 
-// export interface StatsBlockRowContent {
+// export default interface BlockRowContent {
+//   type: "text" | "image";
+//   isLocalized: boolean;
 //   tags: string[];
 //   content: any;
-//   isLocalized: boolean;
 // }
 type StatsBlockRowContent struct {
 	Tags        []string    `json:"tags"`
@@ -44,9 +45,22 @@ type StatsBlockRowContent struct {
 	IsLocalized bool        `json:"isLocalized"`
 }
 
+type ContentIcon struct {
+	Color string `json:"color"`
+	Name  string `json:"name"`
+	Size  int    `json:"size"`
+}
+
+type ContentImage struct {
+	URL    string `json:"url"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+}
+
 type ContentType string
 
 const (
 	ContentTypeText  ContentType = "text"
 	ContentTypeImage ContentType = "image"
+	ContentTypeIcon  ContentType = "icon"
 )
