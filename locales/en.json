@@ -1,0 +1,14 @@
+{
+  "localized_hello": "Hello",
+  "localized_battles": "Battles",
+  "localized_winrate": "Winrate",
+  "localized_winrate_with_battles": "Winrate",
+
+  "localized_average_damage": "Avg. Damage",
+  "localized_damage_done": "Damage",
+
+  "localized_wn8_rating": "WN8",
+
+  "localized_rating_overview_title": "Rating Battles",
+  "localized_random_overview_title": "Regular Battles"
+}
