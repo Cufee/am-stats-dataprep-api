@@ -20,7 +20,7 @@ const (
 	// BlockMaxFrags     = "max_frags"
 	// BlockShotsHit     = "hits"
 	// BlockShotsFired   = "shots"
-	// BlockShotAccuracy = "shot_accuracy"
+	BlockShotAccuracy = "shot_accuracy"
 
 	// Assists
 	// BlockSpotted  = "spotted"

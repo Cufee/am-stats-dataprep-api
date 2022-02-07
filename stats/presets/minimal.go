@@ -19,13 +19,13 @@ var MinimalOptions = types.Options{
 		Include:    true,
 		WithLabels: true,
 		Type:       types.OverviewTypeRating,
-		Blocks:     []string{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage},
+		Blocks:     []string{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
 	},
 	RegularBattles: types.OverviewOptions{
 		Include:    true,
 		WithLabels: true,
 		Type:       types.OverviewTypeRegular,
-		Blocks:     []string{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage},
+		Blocks:     []string{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
 	},
 	VehiclesFull: types.VehicleOptions{
 		Include: false,

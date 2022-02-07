@@ -34,7 +34,7 @@ var DefaultOptions = types.Options{
 		WithLabels:       true,
 		WithAllTimeStats: true,
 		Type:             types.OverviewTypeRating,
-		Blocks:           []string{types.BlockBattles, types.BlockAverageDamage, types.BlockWinrate, types.BlockWN8Rating},
+		Blocks:           []string{types.BlockBattles, types.BlockAverageDamage, types.BlockWinrate, types.BlockShotAccuracy, types.BlockWN8Rating},
 	},
 	RegularBattles: types.OverviewOptions{
 		Include:          true,
@@ -42,7 +42,7 @@ var DefaultOptions = types.Options{
 		WithLabels:       true,
 		WithAllTimeStats: true,
 		Type:             types.OverviewTypeRegular,
-		Blocks:           []string{types.BlockBattles, types.BlockAverageDamage, types.BlockWinrate, types.BlockWN8Rating},
+		Blocks:           []string{types.BlockBattles, types.BlockAverageDamage, types.BlockWinrate, types.BlockShotAccuracy, types.BlockWN8Rating},
 	},
 	VehiclesFull: types.VehicleOptions{
 		Include:          true,
@@ -52,7 +52,7 @@ var DefaultOptions = types.Options{
 		WithVehicleName:  true,
 		WithAllTimeStats: true,
 		WithLabels:       true,
-		Blocks:           []string{types.BlockBattles, types.BlockAverageDamage, types.BlockWinrate, types.BlockWN8Rating},
+		Blocks:           []string{types.BlockBattles, types.BlockAverageDamage, types.BlockWinrate, types.BlockShotAccuracy, types.BlockWN8Rating},
 	},
 	VehiclesSlim: types.VehicleOptions{
 		Include:          true,
@@ -62,6 +62,6 @@ var DefaultOptions = types.Options{
 		WithVehicleName:  true,
 		WithAllTimeStats: false,
 		WithLabels:       true,
-		Blocks:           []string{types.BlockAverageDamage, types.BlockWinrateWithBattles, types.BlockWN8Rating},
+		Blocks:           []string{types.BlockAverageDamage, types.BlockWinrateWithBattles, types.BlockShotAccuracy, types.BlockWN8Rating},
 	},
 }

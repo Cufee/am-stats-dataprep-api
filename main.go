@@ -31,5 +31,5 @@ func main() {
 
 	apiV1.Post("/stats", handlers.GenerateStatsWithOptions)
 
-	log.Print(app.Listen(fmt.Sprintf(":%v", os.Getenv("PORT"))))
+	log.Fatal(app.Listen(fmt.Sprintf(":%v", os.Getenv("PORT"))))
 }

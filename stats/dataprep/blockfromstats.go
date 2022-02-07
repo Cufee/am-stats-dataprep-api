@@ -25,6 +25,10 @@ func BlockFromStats(input DataprepInput, blockType string) (types.StatsBlock, er
 	case types.BlockAverageDamage:
 		return AvarageDamageBlock(input)
 
+	// Accuracy
+	case types.BlockShotAccuracy:
+		return ShotAccuracyBlock(input)
+
 	default:
 		return types.StatsBlock{}, fmt.Errorf("unknown block type: %s", blockType)
 	}
