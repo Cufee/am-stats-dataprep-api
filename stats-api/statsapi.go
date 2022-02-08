@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"byvko.dev/repo/am-stats-dataprep-api/firebase"
 	"byvko.dev/repo/am-stats-dataprep-api/logs"
 	"byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/utils"
@@ -32,4 +33,9 @@ func GetStatsByPlayerID(playerID int, realm string, days int) (*types.PlayerRawS
 	}
 
 	return &response, err
+}
+
+func GetMockStats() (*types.PlayerRawStats, error) {
+	var response types.PlayerRawStats
+	return &response, firebase.GetPreviewStats(&response)
 }
