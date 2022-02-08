@@ -4,8 +4,18 @@ import (
 	"encoding/json"
 	"strings"
 
+	_ "embed"
+
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
+)
+
+var (
+	//go:embed locales/en.json
+	locEn []byte
+
+	//go:embed locales/ru.json
+	locRu []byte
 )
 
 func InitLocalizer(langs ...string) *i18n.Localizer {
@@ -17,8 +27,8 @@ func InitLocalizer(langs ...string) *i18n.Localizer {
 	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 
 	// Load source language
-	bundle.LoadMessageFile("./locales/en.json")
-	bundle.LoadMessageFile("./locales/ru.json")
+	bundle.MustParseMessageFileBytes(locEn, "en.json")
+	bundle.MustParseMessageFileBytes(locRu, "ru.json")
 
 	// Initialize localizer which will look for phrase keys in passed languages
 	// in a strict order (first language is searched first)

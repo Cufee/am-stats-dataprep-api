@@ -67,6 +67,7 @@ func GenerateStatsFromSettings(c *fiber.Ctx) error {
 
 	if !userSettings.UseCustomOptions {
 		userSettings.Options = presets.GetPresetByName(userSettings.StylePreset)
+		userSettings.Options.Locale = userSettings.Locale
 	}
 
 	// Get stats
