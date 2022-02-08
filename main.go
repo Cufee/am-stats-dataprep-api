@@ -24,7 +24,7 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	apiV1 := app.Group("/api/v1")
+	apiV1 := app.Group("/v1")
 
 	statsV1 := apiV1.Group("/stats")
 	statsV1.Post("/", stats.GenerateStatsWithOptions)
