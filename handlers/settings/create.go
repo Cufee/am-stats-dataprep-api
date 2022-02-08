@@ -4,6 +4,7 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/handlers"
 	"byvko.dev/repo/am-stats-dataprep-api/settings"
 	"byvko.dev/repo/am-stats-dataprep-api/settings/types"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/presets"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -17,6 +18,7 @@ func CreateNewSettings(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
+	settingsData.Options = presets.GetPresetByName(settingsData.StylePreset)
 	id, err := settings.CreateNewSettings(settingsData)
 	if err != nil {
 		response.Error.Message = "Error creating settings"

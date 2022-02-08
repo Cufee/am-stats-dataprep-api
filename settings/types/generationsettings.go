@@ -9,16 +9,17 @@ import (
 )
 
 type GenerationSettings struct {
-	Options     types.Options `json:"options" firestore:"options"`
-	StylePreset string        `json:"stylePreset" firestore:"stylePreset"`
-	LastUsed    time.Time     `json:"lastUsed,omitempty" firestore:"lastUsed,omitempty"`
+	Options          types.Options `json:"options,omitempty" firestore:"options"`
+	StylePreset      string        `json:"stylePreset,omitempty" firestore:"stylePreset"`
+	UseCustomOptions bool          `json:"useCustomOptions,omitempty" firestore:"useCustomOptions"`
+	LastUsed         time.Time     `json:"lastUsed,omitempty" firestore:"lastUsed,omitempty"`
 
 	Player struct {
-		ID    int    `json:"id" firestore:"id"`
-		Realm string `json:"realm" firestore:"realm"`
-	} `json:"player" firestore:"player"`
+		ID    int    `json:"id,omitempty" firestore:"id"`
+		Realm string `json:"realm,omitempty" firestore:"realm"`
+	} `json:"player,omitempty" firestore:"player"`
 
-	Locale string `json:"locale" firestore:"locale"`
+	Locale string `json:"locale,omitempty" firestore:"locale"`
 }
 
 func (s *GenerationSettings) Validate() error {

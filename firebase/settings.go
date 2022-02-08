@@ -44,3 +44,11 @@ func ReplaceSettingsByID(id string, data interface{}) error {
 	}
 	return driver.ReplaceDocumentByID(settingsCollection, id, data)
 }
+
+func UpdateSettingsByID(id string, payload map[string]interface{}) error {
+	driver, err := driver.NewDriver()
+	if err != nil {
+		return err
+	}
+	return driver.UpdateDocumentByID(settingsCollection, id, payload)
+}

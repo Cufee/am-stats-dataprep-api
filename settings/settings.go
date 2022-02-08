@@ -23,5 +23,6 @@ func UpdateSettingsByID(id string, data types.GenerationSettings) error {
 	if err != nil {
 		return err
 	}
+	// payload := make(map[string]interface{})
 	return firebase.ReplaceSettingsByID(id, data)
 }

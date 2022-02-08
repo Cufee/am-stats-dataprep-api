@@ -34,7 +34,6 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
-	// Check for passed in options -- use default for now
 	options := presets.GetPresetByName(request.Profile)
 	options.Locale = request.Locale
 	completeCards, err := stats.CompilePlayerStatsCards(statsData, options)
@@ -64,6 +63,10 @@ func GenerateStatsFromSettings(c *fiber.Ctx) error {
 		response.Error.Message = "Error getting settings"
 		response.Error.Context = err.Error()
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
+	}
+
+	if !userSettings.UseCustomOptions {
+		userSettings.Options = presets.GetPresetByName(userSettings.StylePreset)
 	}
 
 	// Get stats
