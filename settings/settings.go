@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"byvko.dev/repo/am-stats-dataprep-api/firebase"
+	firebase "byvko.dev/repo/am-stats-dataprep-api/firebase/realtime"
 	"byvko.dev/repo/am-stats-dataprep-api/settings/types"
 )
 

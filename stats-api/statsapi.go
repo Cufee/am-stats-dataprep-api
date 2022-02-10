@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"byvko.dev/repo/am-stats-dataprep-api/firebase"
+	firebase "byvko.dev/repo/am-stats-dataprep-api/firebase/firestore"
 	"byvko.dev/repo/am-stats-dataprep-api/logs"
 	"byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/utils"

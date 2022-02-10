@@ -1,13 +1,10 @@
-package firebase
+package realtime
 
 import (
-	"time"
-
-	"byvko.dev/repo/am-stats-dataprep-api/firebase/driver"
-	"byvko.dev/repo/am-stats-dataprep-api/logs"
+	"byvko.dev/repo/am-stats-dataprep-api/firebase/realtime/driver"
 )
 
-const settingsCollection = "stats-settings"
+const settingsCollection = "stats/settings/"
 
 func GetSettingsByID(id string, out interface{}) error {
 	driver, err := driver.NewDriver()
@@ -18,14 +15,14 @@ func GetSettingsByID(id string, out interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		update := make(map[string]interface{})
-		update["lastUsed"] = time.Now()
-		err = driver.UpdateDocumentByID(settingsCollection, id, update)
-		if err != nil {
-			logs.Error("Error updating lastUsed on %v: %v", id, err)
-		}
-	}()
+	// defer func() {
+	// 	update := make(map[string]interface{})
+	// 	update["lastUsed"] = time.Now()
+	// 	err = driver.UpdateDocumentByID(settingsCollection, id, update)
+	// 	if err != nil {
+	// 		logs.Error("Error updating lastUsed on %v: %v", id, err)
+	// 	}
+	// }()
 	return nil
 }
 

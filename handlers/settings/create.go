@@ -13,16 +13,20 @@ func CreateNewSettings(c *fiber.Ctx) error {
 
 	var settingsData types.GenerationSettings
 	if err := c.BodyParser(&settingsData); err != nil {
-		response.Error.Message = "Error parsing settings"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error parsing settings",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
 	settingsData.Options = presets.GetPresetByName(settingsData.StylePreset)
 	id, err := settings.CreateNewSettings(settingsData)
 	if err != nil {
-		response.Error.Message = "Error creating settings"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error creating settings",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 

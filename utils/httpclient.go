@@ -47,7 +47,10 @@ func HTTPRequest(url string, method string, headers map[string]string, payload [
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err = client.Do(req)
 	if err != nil {
-		return resp.StatusCode, err
+		if resp != nil {
+			return resp.StatusCode, err
+		}
+		return 0, err
 	}
 	// Read body
 	bodyBytes, err = ioutil.ReadAll(resp.Body)

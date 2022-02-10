@@ -12,22 +12,28 @@ func UpdateSettingsByID(c *fiber.Ctx) error {
 
 	settingsID := c.Params("id")
 	if settingsID == "" {
-		response.Error.Message = "Missing required parameters"
-		response.Error.Context = "Settings ID is required"
+		response.Error = &handlers.ResponseError{
+			Message: "Missing required parameters",
+			Context: "Settings ID is required",
+		}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
 	var settingsData types.GenerationSettings
 	if err := c.BodyParser(&settingsData); err != nil {
-		response.Error.Message = "Error parsing settings"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error parsing settings",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
 	err := settings.UpdateSettingsByID(settingsID, settingsData)
 	if err != nil {
-		response.Error.Message = "Error updating settings"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error updating settings",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 

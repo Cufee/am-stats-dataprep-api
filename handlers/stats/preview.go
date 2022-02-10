@@ -13,31 +13,39 @@ func PreviewSettings(c *fiber.Ctx) error {
 
 	settingsID := c.Params("id")
 	if settingsID == "" {
-		response.Error.Message = "Missing required parameters"
-		response.Error.Context = "Settings ID is required"
+		response.Error = &handlers.ResponseError{
+			Message: "Missing required parameters",
+			Context: "Settings ID is required",
+		}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
 	userSettings, err := settings.GetSettingsByID(settingsID)
 	if err != nil {
-		response.Error.Message = "Error getting settings"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error getting settings",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
 	// Get stats
 	statsData, err := statsapi.GetMockStats()
 	if err != nil {
-		response.Error.Message = "Error getting stats"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error getting stats",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
 	// Check for passed in options -- use default for now
 	completeCards, err := stats.CompilePlayerStatsCards(statsData, userSettings.Options)
 	if err != nil {
-		response.Error.Message = "Error compiling stats"
-		response.Error.Context = err.Error()
+		response.Error = &handlers.ResponseError{
+			Message: "Error compiling stats",
+			Context: err.Error(),
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 	completeCards.StylePreset = userSettings.StylePreset

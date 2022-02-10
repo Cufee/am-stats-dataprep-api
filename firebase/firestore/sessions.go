@@ -1,10 +1,10 @@
 package firebase
 
 import (
-	"byvko.dev/repo/am-stats-dataprep-api/firebase/driver"
+	"byvko.dev/repo/am-stats-dataprep-api/firebase/firestore/driver"
 )
 
-const statsCollection = "stats"
+const statsCollection = "stats/sessions/"
 
 func GetPreviewStats(out interface{}) error {
 	driver, err := driver.NewDriver()
