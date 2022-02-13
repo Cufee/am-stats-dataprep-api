@@ -3,33 +3,34 @@ package dataprep
 import (
 	"fmt"
 
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
+	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
 )
 
-func BlockFromStats(input DataprepInput, blockType string) (types.StatsBlock, error) {
-	switch blockType {
+func BlockFromStats(input types.DataprepInput) (stats.StatsBlock, error) {
+	switch input.Options.Block.GenerationTag {
 	// Battles
-	case types.BlockBattles:
+	case stats.BlockBattles.GenerationTag:
 		return BattlesBlock(input)
 
-	case types.BlockWinrate:
+	case stats.BlockWinrate.GenerationTag:
 		return WinrateBlock(input)
 
-	case types.BlockWinrateWithBattles:
+	case stats.BlockWinrateWithBattles.GenerationTag:
 		return WinrateWithBattlesBlock(input)
 
 		// Damage
-	case types.BlockDamageDone:
+	case stats.BlockDamageDone.GenerationTag:
 		return BattlesBlock(input)
 
-	case types.BlockAverageDamage:
+	case stats.BlockAverageDamage.GenerationTag:
 		return AvarageDamageBlock(input)
 
 	// Accuracy
-	case types.BlockShotAccuracy:
+	case stats.BlockShotAccuracy.GenerationTag:
 		return ShotAccuracyBlock(input)
 
 	default:
-		return types.StatsBlock{}, fmt.Errorf("unknown block type: %s", blockType)
+		return stats.StatsBlock{}, fmt.Errorf("unknown block type: %s", input.Options.Block.GenerationTag)
 	}
 }

@@ -1,18 +1,35 @@
 package types
 
-const (
+import "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/icons"
+
+type BlockOptions struct {
+	GenerationTag   string `json:"generationTag,omitempty"`
+	LocalizationTag string `json:"localizationTag,omitempty"`
+
+	IconDictOverwrite  map[string]string `json:"iconDictOverwrite,omitempty"`  // By default icons are arrows
+	IconColorOverWrite string            `json:"iconColorOverwrite,omitempty"` // By default, icons are red,green,yellow based on session vs all time comparison
+	HasIcon            bool              `json:"hasIcon,omitempty"`
+}
+
+func (b BlockOptions) WithIcon() BlockOptions {
+	b.HasIcon = true
+	return b
+}
+
+var (
 	// Battles
-	BlockBattles = "battles"
+	BlockBattles = BlockOptions{GenerationTag: "battles", LocalizationTag: "localized_battles"}
+
 	// BlockBattlesWon         = "wins"
 	// BlockBattlesLost        = "losses"
 	// BlockBattlesSurvived    = "survived_battles"
-	BlockWinrateWithBattles = "winrate_with_battles"
-	BlockWinrate            = "winrate"
+	BlockWinrateWithBattles = BlockOptions{GenerationTag: "winrateWithBattles", LocalizationTag: "localized_winrate_with_battles"}
+	BlockWinrate            = BlockOptions{GenerationTag: "winrate", LocalizationTag: "localized_winrate"}
 
 	// Damage
-	BlockDamageDone = "damage_dealt"
+	BlockDamageDone = BlockOptions{GenerationTag: "damageDone", LocalizationTag: "localized_damage_done"}
 	// BlockDamageReceived = "damage_received"
-	BlockAverageDamage = "average_damage"
+	BlockAverageDamage = BlockOptions{GenerationTag: "averageDamage", LocalizationTag: "localized_average_damage"}
 	// BlockDamageRatio    = "damage_ratio"
 
 	// Frags / Shots
@@ -20,7 +37,7 @@ const (
 	// BlockMaxFrags     = "max_frags"
 	// BlockShotsHit     = "hits"
 	// BlockShotsFired   = "shots"
-	BlockShotAccuracy = "shot_accuracy"
+	BlockShotAccuracy = BlockOptions{GenerationTag: "shotAccuracy", LocalizationTag: "localized_shot_accuracy"}
 
 	// Assists
 	// BlockSpotted  = "spotted"
@@ -34,7 +51,7 @@ const (
 	// Rating
 	// BlockAftermathRating = "aftermath_rating"
 	// BlockWargamingRating = "wargaming_rating"
-	BlockWN8Rating = "wn8_rating"
+	BlockWN8Rating = BlockOptions{GenerationTag: "wn8Rating", LocalizationTag: "localized_wn8_rating", IconDictOverwrite: icons.IconsCircle}
 
 	// Challenges
 	// BlockChallengeTimePassed = "challenge_time_passed"

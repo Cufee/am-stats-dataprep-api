@@ -6,6 +6,8 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/logs"
 	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
+	prepTypes "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
@@ -40,18 +42,15 @@ func GenerateVehiclesCards(stats *api.PlayerRawStats, options types.VehicleOptio
 func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleOptions, vehicle *api.VehicleStats, localizer *i18n.Localizer) (types.StatsCard, error) {
 	var row types.StatsCardRow
 	for _, block := range options.Blocks {
-		if block == types.BlockWN8Rating {
-			var input dataprep.DataprepInput
+		if block.GenerationTag == types.BlockWN8Rating.GenerationTag {
+			var input prepTypes.DataprepInput
 			input.Options.WithAllTime = false // There is no all time WN8 rating for vehicles
 			input.Options.WithLabel = options.WithLabels
+			input.Options.WithIcons = options.WithIcons
+			input.Options.Block = block
 			input.Localizer = localizer
 
-			sessionRatingStr := "-"
-			if vehicle.TankWN8 > 0 {
-				sessionRatingStr = fmt.Sprint(vehicle.TankWN8)
-			}
-
-			block, err := dataprep.WN8RatingBlock(input, sessionRatingStr, "", dataprep.GetRatingColor(vehicle.TankWN8), "")
+			block, err := dataprep.WN8RatingBlock(input, vehicle.TankWN8, 0)
 			if err != nil {
 				logs.Warning("generateRatingOverviewCard: error generating rating block for %v: %s", stats.PlayerDetails.ID, err)
 				continue
@@ -60,17 +59,19 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 			continue
 		}
 
-		var input dataprep.DataprepInput
-		input.Stats.Session = &vehicle.StatsFrame
+		var input prepTypes.DataprepInput
+		input.Stats.Session = vehicle.StatsFrame
 		allTime, ok := stats.LastSession.Vehicles[fmt.Sprint(vehicle.TankID)]
 		if ok {
-			input.Stats.AllTime = &allTime.StatsFrame
+			input.Stats.AllTime = allTime.StatsFrame
 		}
 		input.Options.WithAllTime = options.WithAllTimeStats
 		input.Options.WithLabel = options.WithLabels
+		input.Options.WithIcons = options.WithIcons
+		input.Options.Block = block
 		input.Localizer = localizer
 
-		block, err := dataprep.BlockFromStats(input, block)
+		block, err := dataprep.BlockFromStats(input)
 		if err != nil {
 			logs.Warning("generateRatingOverviewCard: error generating block for %v: %s", stats.PlayerDetails.ID, err)
 			continue
@@ -84,13 +85,13 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 		if options.WithVehicleTier {
 			content = append(content, types.StatsBlockRowContent{
 				Content: intToRoman(vehicle.TankTier),
-				Tags:    []string{dataprep.TagVehicleTier},
+				Tags:    []string{utils.TagVehicleTier},
 			})
 		}
 		if options.WithVehicleName {
 			content = append(content, types.StatsBlockRowContent{
 				Content: vehicle.TankName,
-				Tags:    []string{dataprep.TagVehicleName},
+				Tags:    []string{utils.TagVehicleName},
 			})
 		}
 
@@ -102,6 +103,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 							Content: content,
 						},
 					},
+					Tags: []string{utils.TagLabel},
 				},
 			},
 		}

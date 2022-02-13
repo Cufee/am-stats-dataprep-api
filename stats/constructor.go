@@ -86,8 +86,8 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		slimVehiclesOffset = len(vehiclesFull)
 	}
 
-	if options.VehiclesSlim.Include && len(stats.SessionStats.Vehicles) > options.VehiclesFull.Limit {
-		options.VehiclesFull.Offset = slimVehiclesOffset
+	if options.VehiclesSlim.Include && len(stats.SessionStats.Vehicles) >= slimVehiclesOffset {
+		options.VehiclesSlim.Offset = slimVehiclesOffset
 		vehiclesSlim, err := generators.GenerateVehiclesCards(stats, options.VehiclesSlim, localizer)
 		if err != nil {
 			logs.Error("Failed to generate vehicles slim for %v: %v", stats.PlayerDetails.ID, err)
@@ -97,6 +97,7 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 	}
 
 	response.Cards = cards
+	response.LastBattle = stats.PlayerDetails.LastBattle
 	if len(response.Cards) == 0 {
 		logs.Error("Failed to generate any cards for %v", stats.PlayerDetails.ID)
 		return response, fmt.Errorf("failed to generate any cards for %v", stats.PlayerDetails.ID)

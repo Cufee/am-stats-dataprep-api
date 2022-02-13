@@ -1,9 +1,10 @@
-package dataprep
+package utils
 
 const (
-	tagSession = "session"
-	tagAllTime = "alltime"
-	tagLabel   = "label"
+	TagSession = "session"
+	TagAllTime = "alltime"
+	TagLabel   = "label"
+	TagIcon    = "icon"
 
 	TagVehicleTier = "vehicleTier"
 	TagVehicleName = "vehicleName"

@@ -28,15 +28,15 @@ type StatusIconsOptions struct {
 }
 
 type NotificationsOptions struct {
-	Include bool     `json:"include,omitempty" firestore:"include"`
-	Blocks  []string `json:"blocks,omitempty" 	firestore:"blocks"`
+	Include bool           `json:"include,omitempty" firestore:"include"`
+	Blocks  []BlockOptions `json:"blocks,omitempty" firestore:"blocks"`
 }
 
 type ChallengesOptions struct {
-	Include bool     `json:"include,omitempty" firestore:"include"`
-	Limit   int      `json:"limit,omitempty" firestore:"limit"`
-	Blocks  []string `json:"blocks,omitempty" firestore:"blocks"`
-	Types   []string `json:"types,omitempty" firestore:"types"`
+	Include bool           `json:"include,omitempty" firestore:"include"`
+	Limit   int            `json:"limit,omitempty" firestore:"limit"`
+	Types   []string       `json:"types,omitempty" firestore:"types"`
+	Blocks  []BlockOptions `json:"blocks,omitempty" firestore:"blocks"`
 }
 
 type PlayerOptions struct {
@@ -47,23 +47,25 @@ type PlayerOptions struct {
 }
 
 type OverviewOptions struct {
-	Include          bool     `json:"include,omitempty" firestore:"include"`
-	WithTitle        bool     `json:"withTitle,omitempty" firestore:"withTitle"`
-	WithLabels       bool     `json:"withLabels,omitempty" firestore:"withLabels"`
-	WithAllTimeStats bool     `json:"withAllTimeStats,omitempty" firestore:"withAllTimeStats"`
-	Blocks           []string `json:"blocks,omitempty" firestore:"blocks"`
-	Type             string   `json:"type,omitempty" firestore:"type"`
+	Include          bool           `json:"include,omitempty" firestore:"include"`
+	WithIcons        bool           `json:"withIcons,omitempty" firestore:"withIcons"`
+	WithTitle        bool           `json:"withTitle,omitempty" firestore:"withTitle"`
+	WithLabels       bool           `json:"withLabels,omitempty" firestore:"withLabels"`
+	WithAllTimeStats bool           `json:"withAllTimeStats,omitempty" firestore:"withAllTimeStats"`
+	Type             string         `json:"type,omitempty" firestore:"type"`
+	Blocks           []BlockOptions `json:"blocks,omitempty" firestore:"blocks"`
 }
 
 type VehicleOptions struct {
-	Include          bool     `json:"include,omitempty" firestore:"include"`
-	Limit            int      `json:"limit,omitempty" firestore:"limit"`
-	WithVehicleTier  bool     `json:"withVehicleTier,omitempty" firestore:"withVehicleTier"`
-	WithVehicleName  bool     `json:"withVehicleName,omitempty" firestore:"withVehicleName"`
-	WithAllTimeStats bool     `json:"withAllTimeStats,omitempty" firestore:"withAllTimeStats"`
-	WithLabels       bool     `json:"withLabels,omitempty" firestore:"withLabels"`
-	Offset           int      `json:"offset,omitempty" firestore:"offset"`
-	Blocks           []string `json:"blocks,omitempty" firestore:"blocks"`
+	Include          bool           `json:"include,omitempty" firestore:"include"`
+	Limit            int            `json:"limit,omitempty" firestore:"limit"`
+	WithVehicleTier  bool           `json:"withVehicleTier,omitempty" firestore:"withVehicleTier"`
+	WithVehicleName  bool           `json:"withVehicleName,omitempty" firestore:"withVehicleName"`
+	WithAllTimeStats bool           `json:"withAllTimeStats,omitempty" firestore:"withAllTimeStats"`
+	WithLabels       bool           `json:"withLabels,omitempty" firestore:"withLabels"`
+	WithIcons        bool           `json:"withIcons,omitempty" firestore:"withIcons"`
+	Offset           int            `json:"offset,omitempty" firestore:"offset"`
+	Blocks           []BlockOptions `json:"blocks,omitempty" firestore:"blocks"`
 }
 
 const (

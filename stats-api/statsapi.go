@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	firebase "byvko.dev/repo/am-stats-dataprep-api/firebase/firestore"
+	"byvko.dev/repo/am-stats-dataprep-api/helpers"
 	"byvko.dev/repo/am-stats-dataprep-api/logs"
 	"byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
-	"byvko.dev/repo/am-stats-dataprep-api/utils"
 )
 
 const DefaultHeaderKeyIdentifier string = "x-api-key"
@@ -27,7 +27,7 @@ func GetStatsByPlayerID(playerID int, realm string, days int) (*types.PlayerRawS
 
 	var response types.PlayerRawStats
 	var url = fmt.Sprintf("%v/stats", StatsApiUrl)
-	_, err = utils.HTTPRequest(url, "POST", headers, payload, &response)
+	_, err = helpers.HTTPRequest(url, "POST", headers, payload, &response)
 	if err != nil {
 		return nil, logs.Wrap(err, "Failed to get stats by player ID")
 	}

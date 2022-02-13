@@ -5,4 +5,5 @@ type StatsResponse struct {
 	Cards       []StatsCard            `json:"cards"`
 	FailedCards []string               `json:"failedCards"`
 	StylePreset string                 `json:"stylePreset"`
+	LastBattle  int                    `json:"lastBattle"`
 }
