@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	"byvko.dev/repo/am-stats-dataprep-api/localization"
-	"byvko.dev/repo/am-stats-dataprep-api/logs"
-	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/generators"
 	types "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	api "github.com/byvko-dev/am-types/stats/v1"
+
+	"github.com/byvko-dev/am-core/logs"
 )
 
 func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (types.StatsResponse, error) {

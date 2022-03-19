@@ -1,10 +1,11 @@
 package utils
 
 const (
-	TagSession = "session"
-	TagAllTime = "alltime"
-	TagLabel   = "label"
-	TagIcon    = "icon"
+	TagInvisible = "invisible"
+	TagSession   = "session"
+	TagAllTime   = "alltime"
+	TagLabel     = "label"
+	TagIcon      = "icon"
 
 	TagVehicleTier = "vehicleTier"
 	TagVehicleName = "vehicleName"

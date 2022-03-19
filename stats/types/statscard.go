@@ -14,6 +14,7 @@ type StatsCard struct {
 // }
 type StatsCardRow struct {
 	Blocks []StatsBlock `json:"blocks"`
+	Tags   []string     `json:"tags"`
 }
 
 // export interface StatsBlock {
@@ -30,6 +31,7 @@ type StatsBlock struct {
 // }
 type StatsBlockRow struct {
 	Content []StatsBlockRowContent `json:"content"`
+	Tags    []string               `json:"tags"`
 }
 
 // export default interface BlockRowContent {

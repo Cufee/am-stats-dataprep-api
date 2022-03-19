@@ -2,7 +2,6 @@ package dataprep
 
 import (
 	"fmt"
-	"log"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
@@ -16,10 +15,6 @@ func BattlesBlock(input types.DataprepInput) (statsTypes.StatsBlock, error) {
 
 	var block statsTypes.StatsBlock
 	block.Tags = append(block.Tags, input.Options.Block.GenerationTag+"Block")
-
-	log.Print("Session ", (input.Stats.Session.Battles))
-	log.Print("All ", (input.Stats.AllTime.Battles))
-
 	block.Rows = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.Battles), 1, (input.Stats.AllTime.Battles), 1)
 	return block, nil
 }

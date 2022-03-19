@@ -3,10 +3,10 @@ package presets
 import "byvko.dev/repo/am-stats-dataprep-api/stats/types"
 
 const (
-	defaultDetailedVehiclesLimit = 3
+	opusDetailedVehiclesLimit = 3
 )
 
-var DefaultOptions = types.Options{
+var OpusOptions = types.Options{
 	AccountStatus: types.StatusIconsOptions{
 		Include: false, // Not complete
 		Limit:   3,
@@ -57,7 +57,7 @@ var DefaultOptions = types.Options{
 		Blocks:           []types.BlockOptions{types.BlockBattles, types.BlockAverageDamage.WithIcon(), types.BlockWinrate.WithIcon(), types.BlockShotAccuracy.WithIcon(), types.BlockWN8Rating.WithIcon()},
 	},
 	VehiclesSlim: types.VehicleOptions{
-		Limit:            defaultDetailedVehiclesLimit,
+		Limit:            opusDetailedVehiclesLimit,
 		Include:          true,
 		WithVehicleTier:  true,
 		WithIcons:        true,

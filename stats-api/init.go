@@ -1,14 +1,13 @@
 package statsapi
 
-import "os"
+import (
+	"github.com/byvko-dev/am-core/helpers"
+)
 
 var StatsApiUrl string
 var StatsApiKey string
 
 func init() {
-	StatsApiKey = os.Getenv("STATS_API_KEY")
-	StatsApiUrl = os.Getenv("STATS_API_URL")
-	if StatsApiKey == "" || StatsApiUrl == "" {
-		panic("STATS_API_KEY or STATS_API_URL not set")
-	}
+	StatsApiKey, _ = helpers.MustGetEnv("STATS_API_KEY")[0].(string)
+	StatsApiUrl, _ = helpers.MustGetEnv("STATS_API_URL")[0].(string)
 }

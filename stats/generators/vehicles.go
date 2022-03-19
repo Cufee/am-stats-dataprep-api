@@ -3,12 +3,12 @@ package generators
 import (
 	"fmt"
 
-	"byvko.dev/repo/am-stats-dataprep-api/logs"
-	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	prepTypes "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-core/logs"
+	api "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -106,6 +106,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 					Tags: []string{utils.TagLabel},
 				},
 			},
+			Tags: []string{"title_row"},
 		}
 		card.Rows = append(card.Rows, labelRow)
 	}

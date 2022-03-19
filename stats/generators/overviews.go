@@ -3,11 +3,11 @@ package generators
 import (
 	"fmt"
 
-	"byvko.dev/repo/am-stats-dataprep-api/logs"
-	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-core/logs"
+	api "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -66,6 +66,7 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options stats.Ove
 					},
 				},
 			},
+			Tags: []string{"overview_title_row"},
 		})
 	}
 	card.Rows = append(card.Rows, row)
@@ -127,6 +128,7 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options stats.Ove
 					},
 				},
 			},
+			Tags: []string{"overview_title_row"},
 		})
 	}
 	card.Rows = append(card.Rows, row)

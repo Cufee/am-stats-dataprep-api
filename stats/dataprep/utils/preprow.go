@@ -15,7 +15,6 @@ type FmtStr struct {
 	AllTime string
 }
 
-// Is _should_ be safe to pass nil values
 func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentage bool, sessionValue, sessionOf, allTimeValue, allTimeOf int, tags ...string) []types.StatsBlockRow {
 	var rows []types.StatsBlockRow
 
@@ -40,6 +39,14 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 		allTimeString = fmt.Sprintf(fmt.Sprintf(fmtStringFixed, getFormattedString(isPercentage)), allTimeFloat)
 	}
 
+	// Session content
+	sessionRow.Content = append(sessionRow.Content, types.StatsBlockRowContent{
+		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),
+		Type:        types.ContentTypeText,
+		Content:     sessionString,
+		IsLocalized: false,
+	})
+
 	// Session icon
 	if input.Options.WithIcons && input.Options.Block.HasIcon {
 		var icon types.ContentIcon
@@ -48,6 +55,7 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 		if iconsDict == nil {
 			iconsDict = icons.IconsArrows
 		}
+		// TagInvisible
 
 		if sessionFloat > allTimeFloat {
 			if icon.Color == "" {
@@ -73,21 +81,20 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 
 		}
 
-		sessionRow.Content = append(sessionRow.Content, types.StatsBlockRowContent{
+		iconContent := types.StatsBlockRowContent{
 			Tags:        []string{input.Options.Block.GenerationTag, TagIcon, TagSession},
 			Content:     icon,
 			Type:        types.ContentTypeIcon,
 			IsLocalized: false,
-		})
+		}
+
+		sessionRow.Content = append([]types.StatsBlockRowContent{iconContent}, sessionRow.Content...)
+
+		iconInvisible := iconContent
+		iconInvisible.Tags = append(iconInvisible.Tags, TagInvisible)
+		sessionRow.Content = append(sessionRow.Content, iconInvisible)
 	}
 
-	// Session content
-	sessionRow.Content = append(sessionRow.Content, types.StatsBlockRowContent{
-		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),
-		Type:        types.ContentTypeText,
-		Content:     sessionString,
-		IsLocalized: false,
-	})
 	rows = append(rows, sessionRow)
 
 	// All time content

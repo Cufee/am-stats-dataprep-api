@@ -3,9 +3,9 @@ package generators
 import (
 	"fmt"
 
-	"byvko.dev/repo/am-stats-dataprep-api/logs"
-	api "byvko.dev/repo/am-stats-dataprep-api/stats-api/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-core/logs"
+	api "github.com/byvko-dev/am-types/stats/v1"
 )
 
 func GeneratePlayerCard(stats *api.PlayerRawStats, options types.PlayerOptions) (types.StatsCard, error) {

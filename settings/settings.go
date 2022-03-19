@@ -1,28 +1,60 @@
 package settings
 
 import (
-	firebase "byvko.dev/repo/am-stats-dataprep-api/firebase/realtime"
+	"encoding/json"
+	"fmt"
+
+	"byvko.dev/repo/am-stats-dataprep-api/database/settings"
 	"byvko.dev/repo/am-stats-dataprep-api/settings/types"
 )
 
 func GetSettingsByID(id string) (*types.GenerationSettings, error) {
-	var settings types.GenerationSettings
-	return &settings, firebase.GetSettingsByID(id, &settings)
+	var data types.GenerationSettings
+	return &data, settings.GetSettingsByID(id, &data)
 }
 
-func CreateNewSettings(data types.GenerationSettings) (string, error) {
+func CreateNewSettings(userId string, data types.GenerationSettings) (string, error) {
 	err := data.Validate()
 	if err != nil {
 		return "", err
 	}
-	return firebase.CreateNewSettings(data)
+
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+
+	return settings.CreateNewSettings(userId, string(dataBytes))
 }
 
-func UpdateSettingsByID(id string, data types.GenerationSettings) error {
+func CreateNewSettingsWithID(id, userId string, data types.GenerationSettings) error {
 	err := data.Validate()
 	if err != nil {
 		return err
 	}
-	// payload := make(map[string]interface{})
-	return firebase.ReplaceSettingsByID(id, data)
+
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	return settings.CreateNewSettingsWithID(id, userId, string(dataBytes))
+}
+
+func UpdateSettingsByID(userId, id string, data types.GenerationSettings) error {
+	err := data.Validate()
+	if err != nil {
+		return err
+	}
+
+	ownerId, err := settings.GetSettingsOwnerId(id)
+	if err != nil {
+		return err
+	}
+
+	if ownerId != userId {
+		return fmt.Errorf("user %v is not owner of settings %v", userId, id)
+	}
+
+	return settings.ReplaceSettingsByID(id, data)
 }
