@@ -7,7 +7,6 @@ require (
 	github.com/byvko-dev/am-types v1.1.0
 	github.com/gofiber/fiber/v2 v2.26.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
-	go.mongodb.org/mongo-driver v1.8.4
 	golang.org/x/text v0.3.7
 )
 
@@ -35,6 +34,7 @@ require (
 	github.com/xdg-go/scram v1.0.2 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	go.mongodb.org/mongo-driver v1.8.4 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
