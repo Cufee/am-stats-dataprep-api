@@ -1,106 +1,78 @@
 package settings
 
 import (
-	"encoding/json"
-	"path"
-	"time"
+	"errors"
 
-	"github.com/byvko-dev/am-core/firebase/firestore/driver"
-	firebase "github.com/byvko-dev/am-core/firebase/types"
-	"github.com/byvko-dev/am-core/logs"
+	"github.com/byvko-dev/am-core/mongodb/driver"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const settingsCollection = "stats/dataprep/settings"
+func GetSettingsByID(hex string, out interface{}) error {
+	client, err := driver.NewClient()
+	if err != nil {
+		return err
+	}
 
-type databaseSettings struct {
-	OwnerId string                `json:"ownerId" firestore:"ownerId"`
-	Data    interface{}           `json:"data" firestore:"data"`
-	Meta    firebase.DocumentMeta `json:"meta" firestore:"meta"`
+	id, err := primitive.ObjectIDFromHex(hex)
+	if err != nil {
+		return err
+	}
+
+	filter := map[string]interface{}{"_id": id}
+	return client.GetDocumentWithFilter(collection, filter, out)
 }
 
-func GetSettingsOwnerId(id string) (string, error) {
-	driver, err := driver.NewDriver()
+func CreateNewSettings(data interface{}) (string, error) {
+	client, err := driver.NewClient()
+	if err != nil {
+		return "", err
+	}
+	newId, err := client.InsertDocument(collection, data)
 	if err != nil {
 		return "", err
 	}
 
-	var owner string
-	err = driver.GetDocumentByID(settingsCollection, path.Join(id, "ownerId"), &owner)
-	if err != nil {
-		return "", err
+	newIdString, ok := newId.(string)
+	if ok {
+		return newIdString, nil
 	}
-
-	return owner, nil
+	newIdHex, ok := newId.(primitive.ObjectID)
+	if ok {
+		return newIdHex.Hex(), nil
+	}
+	return "", errors.New("unable to convert new id to string")
 }
 
-func GetSettingsByID(id string, out interface{}) error {
-	driver, err := driver.NewDriver()
+// func CreateNewSettingsWithID(id, data interface{}) error {
+// 	client, err := driver.NewClient()
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return driver.InsertDocument(settingsCollection, id, payload)
+// }
+
+// func ReplaceSettingsByID(id string, data interface{}) error {
+// 	client, err := driver.NewClient()
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	client.UpdateDocumentWithFilter()
+
+// 	return driver.ReplaceDocumentByID(settingsCollection, path.Join(id, "data"), data)
+// }
+
+func UpdateSettingsByID(hex string, payload map[string]interface{}) error {
+	client, err := driver.NewClient()
 	if err != nil {
 		return err
 	}
 
-	var document databaseSettings
-	err = driver.GetDocumentByID(settingsCollection, id, &document)
+	id, err := primitive.ObjectIDFromHex(hex)
 	if err != nil {
 		return err
 	}
-
-	defer func() {
-		update := make(map[string]interface{})
-		update["meta/lastUsed"] = time.Now()
-		err = driver.UpdateDocumentByID(settingsCollection, id, update)
-		if err != nil {
-			logs.Error("Error updating lastUsed on %v: %v", id, err)
-		}
-	}()
-
-	return json.Unmarshal([]byte(document.Data.(string)), out)
-}
-
-func CreateNewSettings(owner string, data interface{}) (string, error) {
-	driver, err := driver.NewDriver()
-	if err != nil {
-		return "", err
-	}
-
-	var payload databaseSettings
-	payload.Data = data
-	payload.OwnerId = owner
-	payload.Meta.CreationTime = time.Now()
-	payload.Meta.LastUpdate = time.Now()
-	payload.Meta.LastUsed = time.Now()
-
-	return driver.CreateDocumentInCollection(settingsCollection, payload)
-}
-
-func CreateNewSettingsWithID(id, owner string, data interface{}) error {
-	driver, err := driver.NewDriver()
-	if err != nil {
-		return err
-	}
-
-	var payload databaseSettings
-	payload.Data = data
-	payload.OwnerId = owner
-	payload.Meta.CreationTime = time.Now()
-	payload.Meta.LastUpdate = time.Now()
-	payload.Meta.LastUsed = time.Now()
-
-	return driver.InsertDocument(settingsCollection, id, payload)
-}
-
-func ReplaceSettingsByID(id string, data interface{}) error {
-	driver, err := driver.NewDriver()
-	if err != nil {
-		return err
-	}
-	return driver.ReplaceDocumentByID(settingsCollection, path.Join(id, "data"), data)
-}
-
-func UpdateSettingsByID(id string, payload map[string]interface{}) error {
-	driver, err := driver.NewDriver()
-	if err != nil {
-		return err
-	}
-	return driver.UpdateDocumentByID(settingsCollection, path.Join(id, "data"), payload)
+	filter := map[string]interface{}{"_id": id}
+	return client.UpdateDocumentWithFilter(collection, filter, payload, false)
 }

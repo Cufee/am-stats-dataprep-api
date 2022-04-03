@@ -1,4 +1,4 @@
-SERVICE := am-stats-dataprep-api
+SERVICE := am-render-dataprep-api
 NAMESPACE := aftermath-render
 REGISTRY := ghcr.io/byvko-dev
 # 
@@ -12,6 +12,8 @@ pull:
 	git pull
 
 build:
+	go mod tidy
+	go mod vendor
 	docker build -t ${TAG}:${VERSION} -t ${TAG}:latest .
 	docker image prune -f
 

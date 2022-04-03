@@ -4,48 +4,16 @@ import (
 	"fmt"
 	"os"
 
+	database "byvko.dev/repo/am-stats-dataprep-api/database/init"
 	"byvko.dev/repo/am-stats-dataprep-api/handlers/settings"
 	"byvko.dev/repo/am-stats-dataprep-api/handlers/stats"
-	"byvko.dev/repo/am-stats-dataprep-api/session"
 	"github.com/byvko-dev/am-core/helpers"
-	"github.com/byvko-dev/am-core/mongodb/driver"
-	shims "github.com/byvko-dev/am-core/shims/database/mongodb"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
-	// Initialize the database connection
-	mongoUri, _ := helpers.MustGetEnv("MONGO_URI")[0].(string)
-	databaseName, err := shims.GetDatabaseNameFromURI(mongoUri)
-	if err != nil {
-		panic(err)
-	}
-	err = driver.InitGlobalConnetion(mongoUri, databaseName)
-	if err != nil {
-		panic(err)
-	}
-
-	// // test setup
-	// c := driver.NewClient()
-	// testDoc := map[string]interface{}{
-	// 	"test": "test",
-	// }
-
-	// collection := types.NewCollection("test", nil)
-	// c.UpdateDocumentWithFilter(collection, nil, testDoc, true)
-
-	// out := make(chan interface{})
-	// err := c.SubscribeWithFilter(collection, testDoc, nil, out)
-	// logs.Error(err)
-
-	// go func() {
-	// 	for {
-	// 		fmt.Println(<-out)
-	// 	}
-	// }()
-
 	// Define routes
 	app := fiber.New()
 
@@ -54,29 +22,39 @@ func main() {
 	// CORS
 	origins, _ := helpers.MustGetEnv("CORS_ALLOW_ORIGINS")[0].(string)
 	app.Use(cors.New(cors.Config{
-		AllowCredentials: true,
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowOrigins:     origins,
+		AllowCredentials: true,
 	}))
 
 	apiV1 := app.Group("/v1")
 
-	statsV1 := apiV1.Group("/stats")
-	statsV1.Post("/", stats.GenerateStatsWithOptions)
-	statsV1.Get("/settings/:id", stats.GenerateStatsFromSettings)
-	statsV1.Get("/settings/:id/cache", stats.CacheStatsFromSettings)
-	statsV1.Get("/cache/:id", stats.CachedStatsFromID)
+	openV1 := apiV1.Group("/open")
+	// secureV1 := apiV1.Group("/secure", session.SessionCheckMiddleware)
+	secureV1 := apiV1.Group("/secure")
 
-	settingsV1 := apiV1.Group("/settings")
-	settingsV1.Get("/:id", settings.GetSettingsByID)
-	settingsV1.Put("/", session.SessionCheckMiddleware, settings.CreateNewSettings)
-	settingsV1.Put("/:id", session.SessionCheckMiddleware, settings.CreateNewSettingsWithID)
-	settingsV1.Post("/:id", session.SessionCheckMiddleware, settings.UpdateSettingsByID)
+	// Open routes
+	statsOpenV1 := openV1.Group("/stats")
+	statsOpenV1.Post("/options", stats.GenerateStatsWithOptions)
+	statsOpenV1.Get("/cache/:id", stats.CachedStatsFromID)
+	statsOpenV1.Get("/settings/:id", stats.GenerateStatsFromSettings)
 
-	// Catch all
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Redirect(os.Getenv("FRONTEND_URL"))
-	})
+	settingsOpenV1 := openV1.Group("/settings")
+	settingsOpenV1.Get("/:id", settings.GetSettingsByID)
+
+	// Secure routes
+	settingsSecureV1 := secureV1.Group("/settings")
+	settingsSecureV1.Put("/", settings.CreateNewSettings)
+	settingsSecureV1.Post("/:id", settings.UpdateSettingsByID)
+
+	// Internal -- needs to be moved to a separate service or hidden somehow
+	internalV1 := apiV1.Group("/internal")
+	statsInternalV1 := internalV1.Group("/stats")
+	statsInternalV1.Post("/options/cache", stats.CacheStatsFromOptions)
+	statsInternalV1.Get("/settings/:id/cache", stats.CacheStatsFromSettings)
+
+	// Other init logic
+	go database.Init()
 
 	panic(app.Listen(fmt.Sprintf(":%v", os.Getenv("PORT"))))
 }
