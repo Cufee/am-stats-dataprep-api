@@ -3,17 +3,17 @@ package settings
 import (
 	"time"
 
-	"byvko.dev/repo/am-stats-dataprep-api/database/settings"
-	"byvko.dev/repo/am-stats-dataprep-api/settings/types"
+	database "byvko.dev/repo/am-stats-dataprep-api/database/settings"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetSettingsByID(id string) (*types.GenerationSettings, error) {
-	var data types.GenerationSettings
-	return &data, settings.GetSettingsByID(id, &data)
+func GetSettingsByID(id string) (*settings.GenerationSettings, error) {
+	var data settings.GenerationSettings
+	return &data, database.GetSettingsByID(id, &data)
 }
 
-func CreateNewSettings(userId string, data types.GenerationSettings) (string, error) {
+func CreateNewSettings(userId string, data settings.GenerationSettings) (string, error) {
 	err := data.Validate()
 	if err != nil {
 		return "", err
@@ -26,24 +26,10 @@ func CreateNewSettings(userId string, data types.GenerationSettings) (string, er
 		return "", err
 	}
 
-	return settings.CreateNewSettings(dataBytes)
+	return database.CreateNewSettings(dataBytes)
 }
 
-// func CreateNewSettingsWithID(id, userId string, data types.GenerationSettings) error {
-// 	err := data.Validate()
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	dataBytes, err := json.Marshal(data)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return settings.CreateNewSettingsWithID(id, userId, string(dataBytes))
-// }
-
-func UpdateSettingsByID(id string, data types.GenerationSettings) error {
+func UpdateSettingsByID(id string, data settings.GenerationSettings) error {
 	err := data.Validate()
 	if err != nil {
 		return err
@@ -61,5 +47,5 @@ func UpdateSettingsByID(id string, data types.GenerationSettings) error {
 		return err
 	}
 
-	return settings.UpdateSettingsByID(id, dataMap)
+	return database.UpdateSettingsByID(id, dataMap)
 }

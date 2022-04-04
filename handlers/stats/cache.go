@@ -6,7 +6,6 @@ import (
 	statsapi "byvko.dev/repo/am-stats-dataprep-api/stats-api"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/cache"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/presets"
-	"github.com/byvko-dev/am-core/logs"
 	api "github.com/byvko-dev/am-types/api/v1"
 	types "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/gofiber/fiber/v2"
@@ -42,7 +41,7 @@ func CacheStatsFromSettings(c *fiber.Ctx) error {
 	}
 
 	if !userSettings.UseCustomOptions {
-		userSettings.Options = presets.GetPresetByName(userSettings.StylePreset)
+		userSettings.Options = presets.GetPresetByName(userSettings.Preset)
 		userSettings.Options.Locale = userSettings.Locale
 	}
 
@@ -65,7 +64,7 @@ func CacheStatsFromSettings(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	completeCards.StylePreset = userSettings.StylePreset
+	completeCards.Style = userSettings.Style
 
 	// Save to cache
 	id, err := cache.CreateStatsCache(completeCards)
@@ -111,7 +110,7 @@ func CacheStatsFromOptions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
-	options := presets.GetPresetByName(request.Profile)
+	options := presets.GetPresetByName(request.Preset)
 	completeCards, err := stats.CompilePlayerStatsCards(statsData, options)
 	if err != nil {
 		response.Error = api.ResponseError{
@@ -120,9 +119,7 @@ func CacheStatsFromOptions(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	completeCards.StylePreset = request.Profile
-
-	logs.Debug("%+v", completeCards.Cards[1].Rows)
+	completeCards.Style = request.Style
 
 	// Save to cache
 	id, err := cache.CreateStatsCache(completeCards)

@@ -5,9 +5,10 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
 )
 
-func BlockFromStats(input types.DataprepInput) (stats.StatsBlock, error) {
+func BlockFromStats(input types.DataprepInput) (block.Block, error) {
 	switch input.Options.Block.GenerationTag {
 	// Battles
 	case stats.BlockBattles.GenerationTag:
@@ -31,6 +32,6 @@ func BlockFromStats(input types.DataprepInput) (stats.StatsBlock, error) {
 		return ShotAccuracyBlock(input)
 
 	default:
-		return stats.StatsBlock{}, fmt.Errorf("unknown block type: %s", input.Options.Block.GenerationTag)
+		return block.Block{}, fmt.Errorf("unknown block type: %s", input.Options.Block.GenerationTag)
 	}
 }

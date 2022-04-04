@@ -3,30 +3,34 @@ package generators
 import (
 	"fmt"
 
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
 	"github.com/byvko-dev/am-core/logs"
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
 	api "github.com/byvko-dev/am-types/stats/v1"
 )
 
-func GeneratePlayerCard(stats *api.PlayerRawStats, options types.PlayerOptions) (types.StatsCard, error) {
+func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOptions) (block.Block, error) {
 	if !options.WithClanTag && !options.WithName && !options.WithPins {
-		return types.StatsCard{}, fmt.Errorf("no options provided")
+		return block.Block{}, fmt.Errorf("no options provided")
 	}
 
-	var contentElements []types.StatsBlockRowContent
+	var contentElements []block.Block
 	if options.WithName {
 		// Player name
-		contentElements = append(contentElements, types.StatsBlockRowContent{
-			Type:    types.ContentTypeText,
-			Content: stats.PlayerDetails.Name,
+		contentElements = append(contentElements, block.Block{
+			Tags:        []string{utils.TagPlayerName},
+			ContentType: block.ContentTypeText,
+			Content:     stats.PlayerDetails.Name,
 		})
 	}
 
 	// Clan tag if it exists
 	if options.WithClanTag && stats.PlayerDetails.ClanTag != "" {
-		contentElements = append(contentElements, types.StatsBlockRowContent{
-			Type:    types.ContentTypeText,
-			Content: fmt.Sprintf("[%s]", stats.PlayerDetails.ClanTag),
+		contentElements = append(contentElements, block.Block{
+			Tags:        []string{utils.TagPlayerClan},
+			ContentType: block.ContentTypeText,
+			Content:     fmt.Sprintf("[%s]", stats.PlayerDetails.ClanTag),
 		})
 	}
 
@@ -35,15 +39,22 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options types.PlayerOptions) 
 	}
 
 	// Assemble the content
-	var card types.StatsCard
-	card.Rows = append(card.Rows, types.StatsCardRow{
-		Blocks: []types.StatsBlock{{
-			Rows: []types.StatsBlockRow{
-				{Content: contentElements},
-			},
-			Tags: []string{},
-		}},
-	})
+	var card block.Block
+	card.ContentType = block.ContentTypeBlocks
+	card.Content = []block.Block{
+		{
+			ContentType: block.ContentTypeBlocks,
+			Content: []block.Block{{
+				ContentType: block.ContentTypeBlocks,
+				Content: []block.Block{
+					{
+						ContentType: block.ContentTypeBlocks,
+						Content:     contentElements,
+					},
+				},
+			}},
+		},
+	}
 
 	return card, nil
 }

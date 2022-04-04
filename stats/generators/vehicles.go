@@ -2,52 +2,71 @@ package generators
 
 import (
 	"fmt"
+	"sync"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	prepTypes "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
 	"github.com/byvko-dev/am-core/logs"
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
 	api "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-func GenerateVehiclesCards(stats *api.PlayerRawStats, options types.VehicleOptions, localizer *i18n.Localizer) ([]types.StatsCard, error) {
-	var cards []types.StatsCard
+type cardWithPosition struct {
+	card  block.Block
+	index int
+}
 
+func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOptions, localizer *i18n.Localizer) ([]block.Block, error) {
 	var vehicles []api.VehicleStats
 	if len(stats.SessionStats.Vehicles) < options.Offset {
-		return cards, fmt.Errorf("generateVehiclesCards: offset %d is greater than session stats vehicles length %d", options.Offset, len(stats.SessionStats.Vehicles))
+		return nil, fmt.Errorf("generateVehiclesCards: offset %d is greater than session stats vehicles length %d", options.Offset, len(stats.SessionStats.Vehicles))
 	} else if len(stats.SessionStats.Vehicles) < (options.Offset + options.Limit) {
 		vehicles = stats.SessionStats.Vehicles[options.Offset:]
 	} else {
 		vehicles = stats.SessionStats.Vehicles[options.Offset : options.Offset+options.Limit]
 	}
 
-	for i, vehicle := range vehicles {
-		if i >= options.Limit {
-			break
-		}
+	wg := new(sync.WaitGroup)
+	cardsChan := make(chan cardWithPosition, len(vehicles))
 
-		card, err := generateSingleVehicleCard(stats, options, &vehicle, localizer)
-		if err != nil {
-			logs.Error("Error generating vehicle card for %v: %v", stats.PlayerDetails.ID, err)
-		}
-		cards = append(cards, card)
+	for i, vehicle := range vehicles {
+		wg.Add(1)
+		go func(i int, vehicle api.VehicleStats) {
+			defer wg.Done()
+			card, err := generateSingleVehicleCard(stats, options, &vehicle, localizer)
+			if err != nil {
+				logs.Error("Error generating vehicle card for %v: %v", stats.PlayerDetails.ID, err)
+			}
+			cardsChan <- cardWithPosition{
+				card:  card,
+				index: i,
+			}
+		}(i, vehicle)
+	}
+	wg.Wait()
+	close(cardsChan)
+
+	cards := make([]block.Block, len(vehicles))
+	for card := range cardsChan {
+		cards[card.index] = card.card
 	}
 
 	return cards, nil
 }
 
-func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleOptions, vehicle *api.VehicleStats, localizer *i18n.Localizer) (types.StatsCard, error) {
-	var row types.StatsCardRow
-	for _, block := range options.Blocks {
-		if block.GenerationTag == types.BlockWN8Rating.GenerationTag {
+func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.VehicleOptions, vehicle *api.VehicleStats, localizer *i18n.Localizer) (block.Block, error) {
+	var rowContent []block.Block
+	for _, b := range options.Blocks {
+		if b.GenerationTag == types.BlockWN8Rating.GenerationTag {
 			var input prepTypes.DataprepInput
 			input.Options.WithAllTime = false // There is no all time WN8 rating for vehicles
 			input.Options.WithLabel = options.WithLabels
 			input.Options.WithIcons = options.WithIcons
-			input.Options.Block = block
+			input.Options.Block = b
 			input.Localizer = localizer
 
 			block, err := dataprep.WN8RatingBlock(input, vehicle.TankWN8, 0)
@@ -55,7 +74,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 				logs.Warning("generateRatingOverviewCard: error generating rating block for %v: %s", stats.PlayerDetails.ID, err)
 				continue
 			}
-			row.Blocks = append(row.Blocks, block)
+			rowContent = append(rowContent, block)
 			continue
 		}
 
@@ -68,7 +87,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 		input.Options.WithAllTime = options.WithAllTimeStats
 		input.Options.WithLabel = options.WithLabels
 		input.Options.WithIcons = options.WithIcons
-		input.Options.Block = block
+		input.Options.Block = b
 		input.Localizer = localizer
 
 		block, err := dataprep.BlockFromStats(input)
@@ -76,31 +95,36 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 			logs.Warning("generateRatingOverviewCard: error generating block for %v: %s", stats.PlayerDetails.ID, err)
 			continue
 		}
-		row.Blocks = append(row.Blocks, block)
+		rowContent = append(rowContent, block)
 	}
 
-	var card types.StatsCard
+	var cardRows []block.Block
 	if options.WithVehicleName || options.WithVehicleTier {
-		var content []types.StatsBlockRowContent
+		var content []block.Block
 		if options.WithVehicleTier {
-			content = append(content, types.StatsBlockRowContent{
-				Content: intToRoman(vehicle.TankTier),
-				Tags:    []string{utils.TagVehicleTier},
+			content = append(content, block.Block{
+				ContentType: block.ContentTypeText,
+				Content:     intToRoman(vehicle.TankTier),
+				Tags:        []string{utils.TagVehicleTier},
 			})
 		}
 		if options.WithVehicleName {
-			content = append(content, types.StatsBlockRowContent{
-				Content: vehicle.TankName,
-				Tags:    []string{utils.TagVehicleName},
+			content = append(content, block.Block{
+				ContentType: block.ContentTypeText,
+				Content:     vehicle.TankName,
+				Tags:        []string{utils.TagVehicleName},
 			})
 		}
 
-		labelRow := types.StatsCardRow{
-			Blocks: []types.StatsBlock{
+		labelRow := block.Block{
+			ContentType: block.ContentTypeBlocks,
+			Content: []block.Block{
 				{
-					Rows: []types.StatsBlockRow{
+					ContentType: block.ContentTypeBlocks,
+					Content: []block.Block{
 						{
-							Content: content,
+							ContentType: block.ContentTypeBlocks,
+							Content:     content,
 						},
 					},
 					Tags: []string{utils.TagLabel},
@@ -108,10 +132,19 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options types.VehicleO
 			},
 			Tags: []string{"title_row"},
 		}
-		card.Rows = append(card.Rows, labelRow)
+		cardRows = append(cardRows, labelRow)
 	}
-	card.Rows = append(card.Rows, row)
-	return card, nil
+	cardRows = append(cardRows, block.Block{
+		ContentType: block.ContentTypeBlocks,
+		Content:     rowContent,
+	})
+	return block.Block{
+		ContentType: block.ContentTypeBlocks,
+		Style: block.Style{
+			AlignItems: block.AlignItemsVertical,
+		},
+		Content: cardRows,
+	}, nil
 }
 
 func intToRoman(i int) string {

@@ -40,7 +40,7 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
-	options := presets.GetPresetByName(request.Profile)
+	options := presets.GetPresetByName(request.Preset)
 	options.Locale = request.Locale
 	completeCards, err := stats.CompilePlayerStatsCards(statsData, options)
 	if err != nil {
@@ -50,7 +50,7 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	completeCards.StylePreset = request.Profile
+	completeCards.Style = request.Style
 
 	response.Data = completeCards
 	return c.JSON(response)
@@ -86,7 +86,7 @@ func GenerateStatsFromSettings(c *fiber.Ctx) error {
 	}
 
 	if !userSettings.UseCustomOptions {
-		userSettings.Options = presets.GetPresetByName(userSettings.StylePreset)
+		userSettings.Options = presets.GetPresetByName(userSettings.Preset)
 		userSettings.Options.Locale = userSettings.Locale
 	}
 
@@ -109,7 +109,7 @@ func GenerateStatsFromSettings(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	completeCards.StylePreset = userSettings.StylePreset
+	completeCards.Style = userSettings.Style
 
 	response.Data = completeCards
 	return c.JSON(response)

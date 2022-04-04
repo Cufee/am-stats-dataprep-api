@@ -3,15 +3,17 @@ package dataprep
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
-	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
 )
 
-func WN8RatingBlock(input types.DataprepInput, ratingSession, ratingAllTime int) (stats.StatsBlock, error) {
-	var block stats.StatsBlock
-	block.Tags = append(block.Tags, input.Options.Block.GenerationTag+"Block")
+func WN8RatingBlock(input types.DataprepInput, ratingSession, ratingAllTime int) (block.Block, error) {
+	var b block.Block
+	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
 	input.Options.Block.IconColorOverWrite = getRatingColor(ratingSession)
-	block.Rows = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, ratingSession, 1, ratingAllTime, 1)
-	return block, nil
+	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, ratingSession, 1, ratingAllTime, 1)
+	b.Style.AlignItems = block.AlignItemsVertical
+	b.ContentType = block.ContentTypeBlocks
+	return b, nil
 }
 
 // GetRatingColor - Rating color calculator

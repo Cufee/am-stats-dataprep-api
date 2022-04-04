@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/byvko-dev/am-core/helpers"
+	"github.com/byvko-dev/am-core/helpers/requests"
 	"github.com/byvko-dev/am-core/logs"
 	types "github.com/byvko-dev/am-types/stats/v1"
 )
@@ -30,7 +30,7 @@ func GetStatsByPlayerID(playerID int, realm string, days int) (*types.PlayerRawS
 
 	var response types.PlayerRawStats
 	var url = fmt.Sprintf("%v/stats", StatsApiUrl)
-	_, err = helpers.HTTPRequest(url, "POST", headers, payload, &response)
+	_, err = requests.Send(url, "POST", headers, payload, &response)
 	if err != nil {
 		return nil, logs.Wrap(err, "Failed to get stats by player ID")
 	}

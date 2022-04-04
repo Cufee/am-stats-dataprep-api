@@ -1,11 +1,9 @@
 package settings
 
 import (
-	"byvko.dev/repo/am-stats-dataprep-api/session"
 	"byvko.dev/repo/am-stats-dataprep-api/settings"
-	"byvko.dev/repo/am-stats-dataprep-api/settings/types"
-	"github.com/byvko-dev/am-core/logs"
 	api "github.com/byvko-dev/am-types/api/v1"
+	types "github.com/byvko-dev/am-types/dataprep/v1/settings"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -29,24 +27,7 @@ func UpdateSettingsByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	user, err := session.GetUserFromSession(c)
-	if err != nil || user.ID == "" {
-		logs.Error("Error getting user from session", err)
-		return c.Status(fiber.StatusUnauthorized).JSON(api.ResponseWithError{
-			Error: api.ResponseError{
-				Message: "Unauthorized",
-			},
-		})
-	}
-
-	if user.ID != settingsData.OwnerId {
-		response.Error = api.ResponseError{
-			Message: "Unauthorized",
-		}
-		return c.Status(fiber.StatusUnauthorized).JSON(response)
-	}
-
-	err = settings.UpdateSettingsByID(settingsID, settingsData)
+	err := settings.UpdateSettingsByID(settingsID, settingsData)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error updating settings",

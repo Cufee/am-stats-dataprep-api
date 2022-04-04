@@ -5,7 +5,7 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/icons"
 	dataprep "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -15,11 +15,11 @@ type FmtStr struct {
 	AllTime string
 }
 
-func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentage bool, sessionValue, sessionOf, allTimeValue, allTimeOf int, tags ...string) []types.StatsBlockRow {
-	var rows []types.StatsBlockRow
+func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentage bool, sessionValue, sessionOf, allTimeValue, allTimeOf int, tags ...string) []block.Block {
+	var rows []block.Block
 
-	var sessionRow types.StatsBlockRow
-	var allTimeRow types.StatsBlockRow
+	var sessionRowContent []block.Block
+	var allTimeRowContent []block.Block
 
 	var sessionString string = "-"
 	var sessionFloat float64 = 0
@@ -40,17 +40,16 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 	}
 
 	// Session content
-	sessionRow.Content = append(sessionRow.Content, types.StatsBlockRowContent{
+	sessionRowContent = append(sessionRowContent, block.Block{
 		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),
-		Type:        types.ContentTypeText,
+		ContentType: block.ContentTypeText,
 		Content:     sessionString,
-		IsLocalized: false,
 	})
 
 	// Session icon
 	if input.Options.WithIcons && input.Options.Block.HasIcon {
-		var icon types.ContentIcon
-		icon.Color = input.Options.Block.IconColorOverWrite
+		var icon block.Block
+		icon.Style.Color = input.Options.Block.IconColorOverWrite
 		iconsDict := input.Options.Block.IconDictOverwrite
 		if iconsDict == nil {
 			iconsDict = icons.IconsArrows
@@ -58,54 +57,58 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 		// TagInvisible
 
 		if sessionFloat > allTimeFloat {
-			if icon.Color == "" {
-				icon.Color = icons.IconColorGreen
+			if icon.Style.Color == "" {
+				icon.Style.Color = icons.IconColorGreen
 				if sessionFloat/allTimeFloat > 1.6 {
-					icon.Color = icons.IconColorPurple
+					icon.Style.Color = icons.IconColorPurple
 				} else if sessionFloat/allTimeFloat > 1.4 {
-					icon.Color = icons.IconColorTeal
+					icon.Style.Color = icons.IconColorTeal
 				}
 			}
-			icon.Name = iconsDict[icons.IconDirectionUp]
+			icon.Content = iconsDict[icons.IconDirectionUp]
 		} else if sessionFloat < allTimeFloat {
-			if icon.Color == "" {
-				icon.Color = icons.IconColorRed
+			if icon.Style.Color == "" {
+				icon.Style.Color = icons.IconColorRed
 				if sessionFloat/allTimeFloat > 0.9 {
-					icon.Color = icons.IconColorYellow
+					icon.Style.Color = icons.IconColorYellow
 				}
 			}
-			icon.Name = iconsDict[icons.IconDirectionDown]
-		} else if icon.Color == "" {
-			icon.Color = icons.IconColorNeutral
-			icon.Name = icons.IconsLines[icons.IconDirectionLeft] // same as right and will be horizontal
-
+			icon.Content = iconsDict[icons.IconDirectionDown]
+		} else if icon.Style.Color == "" {
+			icon.Style.Color = icons.IconColorNeutral
+			icon.Content = icons.IconsLines[icons.IconDirectionLeft] // same as right and will be horizontal
 		}
 
-		iconContent := types.StatsBlockRowContent{
+		iconContent := block.Block{
 			Tags:        []string{input.Options.Block.GenerationTag, TagIcon, TagSession},
+			ContentType: block.ContentTypeIcon,
 			Content:     icon,
-			Type:        types.ContentTypeIcon,
-			IsLocalized: false,
 		}
 
-		sessionRow.Content = append([]types.StatsBlockRowContent{iconContent}, sessionRow.Content...)
+		sessionRowContent = append([]block.Block{iconContent}, sessionRowContent...)
 
 		iconInvisible := iconContent
 		iconInvisible.Tags = append(iconInvisible.Tags, TagInvisible)
-		sessionRow.Content = append(sessionRow.Content, iconInvisible)
+		sessionRowContent = append(sessionRowContent, iconInvisible)
 	}
-
-	rows = append(rows, sessionRow)
+	rows = append(rows, block.Block{
+		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),
+		ContentType: block.ContentTypeText,
+		Content:     sessionRowContent,
+	})
 
 	// All time content
 	if input.Options.WithAllTime {
-		allTimeRow.Content = append(allTimeRow.Content, types.StatsBlockRowContent{
+		allTimeRowContent = append(allTimeRowContent, block.Block{
 			Tags:        append([]string{input.Options.Block.GenerationTag, TagAllTime}, tags...),
-			Type:        types.ContentTypeText,
+			ContentType: block.ContentTypeText,
 			Content:     allTimeString,
-			IsLocalized: false,
 		})
-		rows = append(rows, allTimeRow)
+		rows = append(rows, block.Block{
+			Tags:        append([]string{input.Options.Block.GenerationTag, TagAllTime}, tags...),
+			ContentType: block.ContentTypeText,
+			Content:     allTimeRowContent,
+		})
 	}
 
 	// Localized label
@@ -113,12 +116,11 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 		label, _ := input.Localizer.Localize(&i18n.LocalizeConfig{
 			MessageID: input.Options.Block.LocalizationTag,
 		})
-		rows = append(rows, types.StatsBlockRow{
-			Content: []types.StatsBlockRowContent{{
+		rows = append(rows, block.Block{
+			Content: []block.Block{{
 				Tags:        []string{input.Options.Block.GenerationTag, TagLabel},
+				ContentType: block.ContentTypeText,
 				Content:     label,
-				Type:        types.ContentTypeText,
-				IsLocalized: true,
 			}},
 		})
 	}

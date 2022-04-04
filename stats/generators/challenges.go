@@ -1,11 +1,13 @@
 package generators
 
 import (
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"errors"
+
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
 	api "github.com/byvko-dev/am-types/stats/v1"
 )
 
-func GenerateChallengesCards(stats *api.PlayerRawStats, options types.ChallengesOptions) ([]types.StatsCard, error) {
-
-	return []types.StatsCard{}, nil
+func GenerateChallengesCards(stats *api.PlayerRawStats, options settings.ChallengesOptions) ([]block.Block, error) {
+	return []block.Block{}, errors.New("not implemented")
 }

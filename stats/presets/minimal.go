@@ -1,36 +1,39 @@
 package presets
 
-import "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+import (
+	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+)
 
-var MinimalOptions = types.Options{
-	AccountStatus: types.StatusIconsOptions{
+var MinimalOptions = settings.Options{
+	AccountStatus: settings.StatusIconsOptions{
 		Include: false,
 	},
-	Notifications: types.NotificationsOptions{
+	Notifications: settings.NotificationsOptions{
 		Include: false,
 	},
-	Challenges: types.ChallengesOptions{
+	Challenges: settings.ChallengesOptions{
 		Include: false,
 	},
-	Player: types.PlayerOptions{
+	Player: settings.PlayerOptions{
 		Include: false,
 	},
-	RatingBattles: types.OverviewOptions{
+	RatingBattles: settings.OverviewOptions{
 		Include:    true,
 		WithLabels: true,
-		Type:       types.OverviewTypeRating,
-		Blocks:     []types.BlockOptions{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
+		Type:       settings.OverviewTypeRating,
+		Blocks:     []settings.BlockOptions{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
 	},
-	RegularBattles: types.OverviewOptions{
+	RegularBattles: settings.OverviewOptions{
 		Include:    true,
 		WithLabels: true,
-		Type:       types.OverviewTypeRegular,
-		Blocks:     []types.BlockOptions{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
+		Type:       settings.OverviewTypeRegular,
+		Blocks:     []settings.BlockOptions{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
 	},
-	VehiclesFull: types.VehicleOptions{
+	VehiclesFull: settings.VehicleOptions{
 		Include: false,
 	},
-	VehiclesSlim: types.VehicleOptions{
+	VehiclesSlim: settings.VehicleOptions{
 		Include: false,
 	},
 }

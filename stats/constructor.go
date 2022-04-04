@@ -6,12 +6,14 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/localization"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/generators"
 	types "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
 	api "github.com/byvko-dev/am-types/stats/v1"
 
 	"github.com/byvko-dev/am-core/logs"
 )
 
-func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (types.StatsResponse, error) {
+func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options) (types.StatsResponse, error) {
 	if stats == nil {
 		return types.StatsResponse{}, fmt.Errorf("stats is nil")
 	}
@@ -20,15 +22,16 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 	localizer := localization.InitLocalizer(localization.LocaleStringFromLanguage(options.Locale))
 
 	var response types.StatsResponse
-	var cards []types.StatsCard
+	var cards []block.Block
 
 	if options.AccountStatus.Include {
 		statusIcons, err := generators.GenerateStatusIcons(stats, options.AccountStatus)
 		if err != nil {
 			logs.Error("Failed to generate status icons for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.AccountStatus")
+		} else {
+			response.StatusIcons = statusIcons
 		}
-		response.StatusIcons = statusIcons
 	}
 
 	if options.Notifications.Include {
@@ -36,8 +39,9 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate notifications for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.Notifications")
+		} else {
+			cards = append(cards, notifications...)
 		}
-		cards = append(cards, notifications...)
 	}
 
 	if options.Challenges.Include {
@@ -45,8 +49,9 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate challenges for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.Challenges")
+		} else {
+			cards = append(cards, challenges...)
 		}
-		cards = append(cards, challenges...)
 	}
 
 	if options.Player.Include {
@@ -54,8 +59,9 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate player card for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.Player")
+		} else {
+			cards = append(cards, playerCard)
 		}
-		cards = append(cards, playerCard)
 	}
 
 	if options.RatingBattles.Include && stats.SessionStats.BattlesRating > 0 {
@@ -63,8 +69,9 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate rating battles for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.RatingBattles")
+		} else {
+			cards = append(cards, ratingBattles)
 		}
-		cards = append(cards, ratingBattles)
 	}
 
 	if options.RegularBattles.Include && stats.SessionStats.BattlesAll > 0 {
@@ -72,8 +79,9 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate regular battles for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.RatingBattles")
+		} else {
+			cards = append(cards, regularBattles)
 		}
-		cards = append(cards, regularBattles)
 	}
 
 	var slimVehiclesOffset int = 0
@@ -82,9 +90,10 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate vehicles full for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.VehiclesFull")
+		} else {
+			cards = append(cards, vehiclesFull...)
+			slimVehiclesOffset = len(vehiclesFull)
 		}
-		cards = append(cards, vehiclesFull...)
-		slimVehiclesOffset = len(vehiclesFull)
 	}
 
 	if options.VehiclesSlim.Include && len(stats.SessionStats.Vehicles) >= slimVehiclesOffset {
@@ -93,8 +102,9 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options types.Options) (
 		if err != nil {
 			logs.Error("Failed to generate vehicles slim for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.VehiclesSlim")
+		} else {
+			cards = append(cards, vehiclesSlim...)
 		}
-		cards = append(cards, vehiclesSlim...)
 	}
 
 	response.Cards = cards

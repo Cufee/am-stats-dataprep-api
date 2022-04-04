@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-types/dataprep/v1/settings"
 )
 
 func TestGetPresetByName(t *testing.T) {
@@ -15,7 +15,7 @@ func TestGetPresetByName(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want types.Options
+		want settings.Options
 	}{
 		{
 			name: "minimal",
