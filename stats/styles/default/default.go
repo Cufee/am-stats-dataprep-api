@@ -78,6 +78,17 @@ func Load(tags ...string) style.Style {
 	if helpers.SliceContains(tags, []string{"label", "title_row", "overview_title"}) {
 		style = style.Merge(shared.Gap25)
 	}
-
 	return style
+}
+
+func GetBackground(tags ...string) (style.Style, error) {
+	bg, err := shared.LoadBackground("bg_ukraine")
+	if err != nil {
+		return style.Style{}, err
+	}
+
+	return style.Style{
+		BackgroundImage:     bg,
+		BackgroundImageBlur: 15,
+	}, nil
 }

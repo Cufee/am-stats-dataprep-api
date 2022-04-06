@@ -14,6 +14,7 @@ WORKDIR /app
 ENV TZ=Europe/Berlin
 ENV ZONEINFO=/zoneinfo.zip
 COPY --from=builder /app/binary /usr/bin/
+COPY --from=builder /app/assets /app/assets
 COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 

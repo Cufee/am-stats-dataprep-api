@@ -113,10 +113,11 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 		}
 	}
 
+	bgStyle := styles.LoadBackground(styleName, "wrapper")
 	cardBlock := block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     cards,
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "wrapper")),
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "wrapper")).Merge(bgStyle),
 		Tags:        []string{"wrapper"},
 	}
 
