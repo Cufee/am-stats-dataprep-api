@@ -4,8 +4,8 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/settings"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/presets"
-	api "github.com/byvko-dev/am-types/api/v1"
-	types "github.com/byvko-dev/am-types/dataprep/v1/settings"
+	api "github.com/byvko-dev/am-types/api/generic/v1"
+	types "github.com/byvko-dev/am-types/dataprep/settings/v1"
 	"github.com/gofiber/fiber/v2"
 )
 

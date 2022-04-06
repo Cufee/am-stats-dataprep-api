@@ -3,7 +3,7 @@ package types
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/icons"
 
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 )
 
 var (

@@ -3,8 +3,8 @@ package generators
 import (
 	"errors"
 
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	api "github.com/byvko-dev/am-types/stats/v1"
 )
 

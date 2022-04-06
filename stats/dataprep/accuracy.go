@@ -5,7 +5,10 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
+
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
 )
 
 func ShotAccuracyBlock(input types.DataprepInput) (block.Block, error) {
@@ -15,8 +18,9 @@ func ShotAccuracyBlock(input types.DataprepInput) (block.Block, error) {
 
 	var b block.Block
 	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
+	b.Style = styles.LoadWithTags(input.Options.Style, b.Tags...)
 	b.ContentType = block.ContentTypeBlocks
-	b.Style.AlignItems = block.AlignItemsVertical
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
 	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, true, (input.Stats.Session.Hits), (input.Stats.Session.Shots), (input.Stats.AllTime.Hits), (input.Stats.AllTime.Shots))
 	return b, nil
 }

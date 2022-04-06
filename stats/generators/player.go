@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
 	"github.com/byvko-dev/am-core/logs"
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	api "github.com/byvko-dev/am-types/stats/v1"
 )
 
-func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOptions) (block.Block, error) {
+func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOptions, styleName string) (block.Block, error) {
 	if !options.WithClanTag && !options.WithName && !options.WithPins {
 		return block.Block{}, fmt.Errorf("no options provided")
 	}
@@ -20,6 +21,7 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 		// Player name
 		contentElements = append(contentElements, block.Block{
 			Tags:        []string{utils.TagPlayerName},
+			Style:       styles.LoadWithTags(styleName, utils.TagPlayerName),
 			ContentType: block.ContentTypeText,
 			Content:     stats.PlayerDetails.Name,
 		})
@@ -29,6 +31,7 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 	if options.WithClanTag && stats.PlayerDetails.ClanTag != "" {
 		contentElements = append(contentElements, block.Block{
 			Tags:        []string{utils.TagPlayerClan},
+			Style:       styles.LoadWithTags(styleName, utils.TagPlayerClan),
 			ContentType: block.ContentTypeText,
 			Content:     fmt.Sprintf("[%s]", stats.PlayerDetails.ClanTag),
 		})
@@ -38,23 +41,14 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 		logs.Warning("GeneratePlayerCard: pins not implemented yet")
 	}
 
-	// Assemble the content
-	var card block.Block
-	card.ContentType = block.ContentTypeBlocks
-	card.Content = []block.Block{
-		{
+	return block.Block{
+		Tags:        []string{"card"},
+		Style:       styles.LoadWithTags(styleName, "card"),
+		ContentType: block.ContentTypeBlocks,
+		Content: []block.Block{{
 			ContentType: block.ContentTypeBlocks,
-			Content: []block.Block{{
-				ContentType: block.ContentTypeBlocks,
-				Content: []block.Block{
-					{
-						ContentType: block.ContentTypeBlocks,
-						Content:     contentElements,
-					},
-				},
-			}},
-		},
-	}
-
-	return card, nil
+			Content:     contentElements,
+			Style:       styles.LoadWithTags(styleName, "player_name"),
+			Tags:        []string{"player_name"},
+		}}}, nil
 }

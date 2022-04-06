@@ -2,7 +2,7 @@ package presets
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 )
 
 var MinimalOptions = settings.Options{

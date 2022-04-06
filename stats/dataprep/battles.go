@@ -5,8 +5,10 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
 
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
 )
 
 func BattlesBlock(input types.DataprepInput) (block.Block, error) {
@@ -17,7 +19,7 @@ func BattlesBlock(input types.DataprepInput) (block.Block, error) {
 	var b block.Block
 	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
 	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.Battles), 1, (input.Stats.AllTime.Battles), 1)
-	b.Style.AlignItems = block.AlignItemsVertical
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
 	b.ContentType = block.ContentTypeBlocks
 	return b, nil
 }
@@ -30,7 +32,7 @@ func WinrateBlock(input types.DataprepInput) (block.Block, error) {
 	var b block.Block
 	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
 	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, true, (input.Stats.Session.Wins), (input.Stats.Session.Battles), (input.Stats.AllTime.Wins), (input.Stats.AllTime.Battles))
-	b.Style.AlignItems = block.AlignItemsVertical
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
 	b.ContentType = block.ContentTypeBlocks
 	return b, nil
 }
@@ -46,7 +48,7 @@ func WinrateWithBattlesBlock(input types.DataprepInput) (block.Block, error) {
 	fmtString.Session = "%v" + fmt.Sprintf(" (%v)", (input.Stats.Session.Battles))
 	fmtString.AllTime = "%v" + fmt.Sprintf(" (%v)", (input.Stats.AllTime.Battles))
 	b.Content = utils.PrepContentRows(input, fmtString, true, (input.Stats.Session.Wins), (input.Stats.Session.Battles), (input.Stats.AllTime.Wins), (input.Stats.AllTime.Battles))
-	b.Style.AlignItems = block.AlignItemsVertical
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
 	b.ContentType = block.ContentTypeBlocks
 	return b, nil
 }

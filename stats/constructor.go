@@ -5,15 +5,17 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/localization"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/generators"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
 	types "byvko.dev/repo/am-stats-dataprep-api/stats/types"
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	api "github.com/byvko-dev/am-types/stats/v1"
 
 	"github.com/byvko-dev/am-core/logs"
 )
 
-func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options) (types.StatsResponse, error) {
+func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options, styleName string) (types.StatsResponse, error) {
 	if stats == nil {
 		return types.StatsResponse{}, fmt.Errorf("stats is nil")
 	}
@@ -30,7 +32,11 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 			logs.Error("Failed to generate status icons for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.AccountStatus")
 		} else {
-			response.StatusIcons = statusIcons
+			statusBlock := block.Block{
+				ContentType: block.ContentTypeBlocks,
+				Content:     statusIcons,
+			}
+			response.StatusIcons = statusBlock
 		}
 	}
 
@@ -55,7 +61,7 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 	}
 
 	if options.Player.Include {
-		playerCard, err := generators.GeneratePlayerCard(stats, options.Player)
+		playerCard, err := generators.GeneratePlayerCard(stats, options.Player, styleName)
 		if err != nil {
 			logs.Error("Failed to generate player card for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.Player")
@@ -65,7 +71,7 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 	}
 
 	if options.RatingBattles.Include && stats.SessionStats.BattlesRating > 0 {
-		ratingBattles, err := generators.GenerateOverviewCard(stats, options.RatingBattles, localizer)
+		ratingBattles, err := generators.GenerateOverviewCard(stats, options.RatingBattles, localizer, styleName)
 		if err != nil {
 			logs.Error("Failed to generate rating battles for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.RatingBattles")
@@ -75,7 +81,7 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 	}
 
 	if options.RegularBattles.Include && stats.SessionStats.BattlesAll > 0 {
-		regularBattles, err := generators.GenerateOverviewCard(stats, options.RegularBattles, localizer)
+		regularBattles, err := generators.GenerateOverviewCard(stats, options.RegularBattles, localizer, styleName)
 		if err != nil {
 			logs.Error("Failed to generate regular battles for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.RatingBattles")
@@ -86,7 +92,7 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 
 	var slimVehiclesOffset int = 0
 	if options.VehiclesFull.Include && len(stats.SessionStats.Vehicles) > 0 {
-		vehiclesFull, err := generators.GenerateVehiclesCards(stats, options.VehiclesFull, localizer)
+		vehiclesFull, err := generators.GenerateVehiclesCards(stats, options.VehiclesFull, localizer, styleName)
 		if err != nil {
 			logs.Error("Failed to generate vehicles full for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.VehiclesFull")
@@ -98,7 +104,7 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 
 	if options.VehiclesSlim.Include && len(stats.SessionStats.Vehicles) >= slimVehiclesOffset {
 		options.VehiclesSlim.Offset = slimVehiclesOffset
-		vehiclesSlim, err := generators.GenerateVehiclesCards(stats, options.VehiclesSlim, localizer)
+		vehiclesSlim, err := generators.GenerateVehiclesCards(stats, options.VehiclesSlim, localizer, styleName)
 		if err != nil {
 			logs.Error("Failed to generate vehicles slim for %v: %v", stats.PlayerDetails.ID, err)
 			response.FailedCards = append(response.FailedCards, "options.VehiclesSlim")
@@ -107,11 +113,14 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 		}
 	}
 
-	response.Cards = cards
-	response.LastBattle = stats.PlayerDetails.LastBattle
-	if len(response.Cards) == 0 {
-		logs.Error("Failed to generate any cards for %v", stats.PlayerDetails.ID)
-		return response, fmt.Errorf("failed to generate any cards for %v", stats.PlayerDetails.ID)
+	cardBlock := block.Block{
+		ContentType: block.ContentTypeBlocks,
+		Content:     cards,
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "wrapper")),
+		Tags:        []string{"wrapper"},
 	}
+
+	response.Cards = cardBlock
+	response.LastBattle = stats.PlayerDetails.LastBattle
 	return response, nil
 }

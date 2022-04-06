@@ -5,26 +5,28 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
 	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
 	"github.com/byvko-dev/am-core/logs"
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	api "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-func GenerateOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer) (block.Block, error) {
+func GenerateOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	switch options.Type {
 	case settings.OverviewTypeRating:
-		return generateRatingOverviewCard(statsData, options, localizer)
+		return generateRatingOverviewCard(statsData, options, localizer, styleName)
 	case settings.OverviewTypeRegular:
-		return generateRandomOverviewCard(statsData, options, localizer)
+		return generateRandomOverviewCard(statsData, options, localizer, styleName)
 	default:
 		return block.Block{}, fmt.Errorf("unknown overview type: %s", options.Type)
 	}
 }
 
-func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer) (block.Block, error) {
+func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	var rowContent []block.Block
 	for _, block := range options.Blocks {
 		if block.GenerationTag == stats.BlockWN8Rating.GenerationTag {
@@ -38,6 +40,7 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 		input.Options.WithAllTime = options.WithAllTimeStats
 		input.Options.WithLabel = options.WithLabels
 		input.Options.WithIcons = options.WithIcons
+		input.Options.Style = styleName
 		input.Options.Block = block
 		input.Localizer = localizer
 
@@ -57,34 +60,29 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 
 		cardRows = append(cardRows, block.Block{
 			ContentType: block.ContentTypeBlocks,
-			Content: []block.Block{
-				{
-					ContentType: block.ContentTypeBlocks,
-					Content: []block.Block{
-						{
-							ContentType: block.ContentTypeBlocks,
-							Content: []block.Block{{
-								Content: label,
-								Tags:    []string{"overview_title"},
-							}},
-						},
-					},
-				},
-			},
-			Tags: []string{"overview_title_row"},
+			Content: []block.Block{{
+				Content: label,
+				Tags:    []string{"overview_title"},
+				Style:   styles.LoadWithTags(styleName, "overview_title"),
+			}},
+			Tags:  []string{"overview_title_row", "overview_title"},
+			Style: styles.LoadWithTags(styleName, "overview_title_row", "overview_title"),
 		})
 	}
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
+		Style:       styles.LoadWithTags(styleName, "content"),
 	})
 	return block.Block{
+		Tags:        []string{"card", "rating_overview"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card", "rating_overview")),
 		ContentType: block.ContentTypeBlocks,
 		Content:     cardRows,
 	}, nil
 }
 
-func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer) (block.Block, error) {
+func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	var rowContent []block.Block
 	for _, block := range options.Blocks {
 		if block.GenerationTag == stats.BlockWN8Rating.GenerationTag {
@@ -92,6 +90,7 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 			input.Options.WithAllTime = options.WithAllTimeStats
 			input.Options.WithIcons = options.WithIcons
 			input.Options.WithLabel = options.WithLabels
+			input.Options.Style = styleName
 			input.Options.Block = block
 			input.Localizer = localizer
 			block, err := dataprep.WN8RatingBlock(input, statsData.SessionStats.SessionRating, statsData.PlayerDetails.CareerWN8)
@@ -109,6 +108,7 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 		input.Options.WithAllTime = options.WithAllTimeStats
 		input.Options.WithLabel = options.WithLabels
 		input.Options.WithIcons = options.WithIcons
+		input.Options.Style = styleName
 		input.Options.Block = block
 		input.Localizer = localizer
 
@@ -127,34 +127,21 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 		})
 
 		cardRows = append(cardRows, block.Block{
-			ContentType: block.ContentTypeBlocks,
-			Content: []block.Block{
-				{
-					ContentType: block.ContentTypeBlocks,
-					Content: []block.Block{
-						{
-							ContentType: block.ContentTypeBlocks,
-							Content: []block.Block{{
-								ContentType: block.ContentTypeText,
-								Content:     label,
-								Tags:        []string{"overview_title"},
-							}},
-						},
-					},
-				},
-			},
-			Tags: []string{"overview_title_row"},
+			ContentType: block.ContentTypeText,
+			Content:     label,
+			Tags:        []string{"overview_title"},
+			Style:       styles.LoadWithTags(styleName, "overview_title_row"),
 		})
 	}
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
+		Style:       styles.LoadWithTags(styleName, "content"),
 	})
 	return block.Block{
+		Tags:        []string{"card"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card", "random_overview")),
 		ContentType: block.ContentTypeBlocks,
-		Style: block.Style{
-			AlignItems: block.AlignItemsVertical,
-		},
-		Content: cardRows,
+		Content:     cardRows,
 	}, nil
 }

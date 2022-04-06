@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	"github.com/byvko-dev/am-types/wargaming/v1/statistics"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
@@ -17,5 +17,6 @@ type DataprepInput struct {
 		WithIcons   bool
 		WithAllTime bool
 		Block       settings.BlockOptions
+		Style       string
 	}
 }

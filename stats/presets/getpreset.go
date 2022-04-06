@@ -1,6 +1,6 @@
 package presets
 
-import "github.com/byvko-dev/am-types/dataprep/v1/settings"
+import "github.com/byvko-dev/am-types/dataprep/settings/v1"
 
 func GetPresetByName(name string) settings.Options {
 	switch name {

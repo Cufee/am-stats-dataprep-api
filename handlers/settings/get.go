@@ -2,7 +2,7 @@ package settings
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/settings"
-	api "github.com/byvko-dev/am-types/api/v1"
+	api "github.com/byvko-dev/am-types/api/generic/v1"
 	"github.com/gofiber/fiber/v2"
 )
 

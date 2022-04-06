@@ -7,10 +7,12 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	prepTypes "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
 	"github.com/byvko-dev/am-core/logs"
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	api "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
@@ -20,7 +22,7 @@ type cardWithPosition struct {
 	index int
 }
 
-func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOptions, localizer *i18n.Localizer) ([]block.Block, error) {
+func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOptions, localizer *i18n.Localizer, styleName string) ([]block.Block, error) {
 	var vehicles []api.VehicleStats
 	if len(stats.SessionStats.Vehicles) < options.Offset {
 		return nil, fmt.Errorf("generateVehiclesCards: offset %d is greater than session stats vehicles length %d", options.Offset, len(stats.SessionStats.Vehicles))
@@ -37,7 +39,7 @@ func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOp
 		wg.Add(1)
 		go func(i int, vehicle api.VehicleStats) {
 			defer wg.Done()
-			card, err := generateSingleVehicleCard(stats, options, &vehicle, localizer)
+			card, err := generateSingleVehicleCard(stats, options, &vehicle, localizer, styleName)
 			if err != nil {
 				logs.Error("Error generating vehicle card for %v: %v", stats.PlayerDetails.ID, err)
 			}
@@ -52,13 +54,18 @@ func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOp
 
 	cards := make([]block.Block, len(vehicles))
 	for card := range cardsChan {
-		cards[card.index] = card.card
+		cards[card.index] = block.Block{
+			ContentType: block.ContentTypeBlocks,
+			Content:     []block.Block{card.card},
+			Tags:        []string{"card"},
+			Style:       styles.LoadWithTags(styleName, "card"),
+		}
 	}
 
 	return cards, nil
 }
 
-func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.VehicleOptions, vehicle *api.VehicleStats, localizer *i18n.Localizer) (block.Block, error) {
+func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.VehicleOptions, vehicle *api.VehicleStats, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	var rowContent []block.Block
 	for _, b := range options.Blocks {
 		if b.GenerationTag == types.BlockWN8Rating.GenerationTag {
@@ -66,6 +73,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 			input.Options.WithAllTime = false // There is no all time WN8 rating for vehicles
 			input.Options.WithLabel = options.WithLabels
 			input.Options.WithIcons = options.WithIcons
+			input.Options.Style = styleName
 			input.Options.Block = b
 			input.Localizer = localizer
 
@@ -87,6 +95,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 		input.Options.WithAllTime = options.WithAllTimeStats
 		input.Options.WithLabel = options.WithLabels
 		input.Options.WithIcons = options.WithIcons
+		input.Options.Style = styleName
 		input.Options.Block = b
 		input.Localizer = localizer
 
@@ -106,6 +115,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 				ContentType: block.ContentTypeText,
 				Content:     intToRoman(vehicle.TankTier),
 				Tags:        []string{utils.TagVehicleTier},
+				Style:       styles.LoadWithTags(styleName, utils.TagVehicleTier),
 			})
 		}
 		if options.WithVehicleName {
@@ -113,6 +123,7 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 				ContentType: block.ContentTypeText,
 				Content:     vehicle.TankName,
 				Tags:        []string{utils.TagVehicleName},
+				Style:       styles.LoadWithTags(styleName, utils.TagVehicleName),
 			})
 		}
 
@@ -121,29 +132,26 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 			Content: []block.Block{
 				{
 					ContentType: block.ContentTypeBlocks,
-					Content: []block.Block{
-						{
-							ContentType: block.ContentTypeBlocks,
-							Content:     content,
-						},
-					},
-					Tags: []string{utils.TagLabel},
+					Content:     content,
+					Tags:        []string{utils.TagLabel},
+					Style:       styles.LoadWithTags(styleName, utils.TagLabel),
 				},
 			},
-			Tags: []string{"title_row"},
+			Tags:  []string{"title_row"},
+			Style: styles.LoadWithTags(styleName, "title_row"),
 		}
 		cardRows = append(cardRows, labelRow)
 	}
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
+		Style:       styles.LoadWithTags(styleName, "content"),
 	})
 	return block.Block{
 		ContentType: block.ContentTypeBlocks,
-		Style: block.Style{
-			AlignItems: block.AlignItemsVertical,
-		},
-		Content: cardRows,
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "vehicle_overview")),
+		Content:     cardRows,
+		Tags:        []string{"vehicle_overview"},
 	}, nil
 }
 

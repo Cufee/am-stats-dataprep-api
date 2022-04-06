@@ -5,7 +5,7 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats"
 	statsapi "byvko.dev/repo/am-stats-dataprep-api/stats-api"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/presets"
-	api "github.com/byvko-dev/am-types/api/v1"
+	api "github.com/byvko-dev/am-types/api/generic/v1"
 	types "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/gofiber/fiber/v2"
 )
@@ -31,7 +31,7 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 	}
 
 	// Get stats
-	statsData, err := statsapi.GetStatsByPlayerID(request.PID, request.Realm, 0)
+	statsData, err := statsapi.GetStatsByPlayerID(request.PID, request.Realm, request.Days)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error getting stats",
@@ -42,7 +42,7 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 
 	options := presets.GetPresetByName(request.Preset)
 	options.Locale = request.Locale
-	completeCards, err := stats.CompilePlayerStatsCards(statsData, options)
+	completeCards, err := stats.CompilePlayerStatsCards(statsData, options, request.Style)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error compiling stats",
@@ -101,7 +101,7 @@ func GenerateStatsFromSettings(c *fiber.Ctx) error {
 	}
 
 	// Check for passed in options -- use default for now
-	completeCards, err := stats.CompilePlayerStatsCards(statsData, userSettings.Options)
+	completeCards, err := stats.CompilePlayerStatsCards(statsData, userSettings.Options, userSettings.Style)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error compiling stats",

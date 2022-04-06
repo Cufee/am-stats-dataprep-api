@@ -1,15 +1,20 @@
 package icons
 
-const (
-	IconColorWhite   = "white"
-	IconColorBlack   = "black"
-	IconColorRed     = "#fb7185"
-	IconColorBlue    = "#7dd3fc"
-	IconColorTeal    = "#2dd4bf"
-	IconColorGreen   = "#34d399"
-	IconColorYellow  = "#fde047"
-	IconColorPurple  = "#c084fc"
-	IconColorNeutral = "#94a3b8"
+import (
+	"image/color"
+	"strconv"
+)
+
+var (
+	IconColorWhite   = hexToColor("#FFFFFF")
+	IconColorBlack   = hexToColor("#000000")
+	IconColorRed     = hexToColor("#fb7185")
+	IconColorBlue    = hexToColor("#7dd3fc")
+	IconColorTeal    = hexToColor("#2dd4bf")
+	IconColorGreen   = hexToColor("#34d399")
+	IconColorYellow  = hexToColor("#fcfc7d")
+	IconColorPurple  = hexToColor("#c084fc")
+	IconColorNeutral = hexToColor("#94a3b8")
 
 	IconDirectionUp    = "up"
 	IconDirectionDown  = "down"
@@ -46,4 +51,19 @@ func init() {
 	IconsTriangles[IconDirectionDown] = "triangleDown"
 	IconsTriangles[IconDirectionLeft] = "triangleLeft"
 	IconsTriangles[IconDirectionRight] = "triangleRight"
+}
+
+func hexToColor(hex string) color.RGBA {
+	var r, g, b, a int64 = 0, 0, 0, 255
+	if len(hex) == 7 {
+		r, _ = strconv.ParseInt(hex[1:3], 16, 0)
+		g, _ = strconv.ParseInt(hex[3:5], 16, 0)
+		b, _ = strconv.ParseInt(hex[5:7], 16, 0)
+	} else if len(hex) == 9 {
+		r, _ = strconv.ParseInt(hex[1:3], 16, 0)
+		g, _ = strconv.ParseInt(hex[3:5], 16, 0)
+		b, _ = strconv.ParseInt(hex[5:7], 16, 0)
+		a, _ = strconv.ParseInt(hex[7:9], 16, 0)
+	}
+	return color.RGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a)}
 }

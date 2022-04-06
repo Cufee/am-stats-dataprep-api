@@ -5,7 +5,7 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
-	"github.com/byvko-dev/am-types/dataprep/v1/block"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
 )
 
 func BlockFromStats(input types.DataprepInput) (block.Block, error) {

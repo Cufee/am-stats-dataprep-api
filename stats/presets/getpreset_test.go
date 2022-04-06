@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/byvko-dev/am-types/dataprep/v1/settings"
+	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 )
 
 func TestGetPresetByName(t *testing.T) {

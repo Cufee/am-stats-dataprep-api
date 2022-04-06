@@ -67,8 +67,6 @@ github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kd
 github.com/byvko-dev/am-core v1.1.1/go.mod h1:CNCqYL4iFS4y4Fra/uuLv74r7pNSumPVtCgvkFEFZxA=
 github.com/byvko-dev/am-core v1.2.5 h1:UAwpvb4usleajEJ+BBuEVy59riza/oP0cRAIP1DFMvw=
 github.com/byvko-dev/am-core v1.2.5/go.mod h1:SGmiF77qj78W1m9VQ++dQwD/wMzgV8+LFS/1K4p9iYY=
-github.com/byvko-dev/am-types v1.3.1 h1:yEO/2nj0W0oOxKpDrCMPnZgMIC+bfDR0IcDOsvjh858=
-github.com/byvko-dev/am-types v1.3.1/go.mod h1:2dX1N7ujUrYXQBa09X6FsgfA1x8UN3PJxyYpmY/OYbk=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=

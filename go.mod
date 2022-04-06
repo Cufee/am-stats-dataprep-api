@@ -2,7 +2,7 @@ module byvko.dev/repo/am-stats-dataprep-api
 
 go 1.17
 
-replace github.com/byvko-dev/am-types => github.com/byvko-dev/am-types v1.3.1
+replace github.com/byvko-dev/am-types => ../am-types
 
 require (
 	github.com/byvko-dev/am-core v1.2.5
