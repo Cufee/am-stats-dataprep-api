@@ -9,7 +9,7 @@ var (
 	IconColorBlack   = helpers.HexToColor("#000000")
 	IconColorRed     = helpers.HexToColor("#fb7185")
 	IconColorBlue    = helpers.HexToColor("#7dd3fc")
-	IconColorTeal    = helpers.HexToColor("#2dd4bf")
+	IconColorTeal    = helpers.HexToColor("#2bcee3")
 	IconColorGreen   = helpers.HexToColor("#34d399")
 	IconColorYellow  = helpers.HexToColor("#fcfc7d")
 	IconColorPurple  = helpers.HexToColor("#c084fc")

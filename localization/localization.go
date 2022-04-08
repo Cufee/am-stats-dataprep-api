@@ -43,6 +43,8 @@ func LocaleStringFromLanguage(lang string) string {
 	// Russian
 	case "ru":
 		fallthrough
+	case "rus":
+		fallthrough
 	case "russian":
 		fallthrough
 	case "ru_ru":
