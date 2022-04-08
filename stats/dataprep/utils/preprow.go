@@ -8,6 +8,7 @@ import (
 	dataprep "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/dataprep/style/v1"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -25,14 +26,14 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 
 	var sessionString string = "-"
 	var sessionFloat float64 = 0
-	if sessionOf > 0 {
+	if sessionOf > 0 && sessionValue > 0 {
 		sessionFloat = divideValueOf(sessionValue, sessionOf, isPercentage)
 		sessionString = fmt.Sprintf(fmt.Sprintf(fmtString.Session, getFormattedString(isPercentage)), sessionFloat)
 	}
 
 	var allTimeString string = "-"
 	var allTimeFloat float64 = 0
-	if allTimeOf > 0 {
+	if allTimeOf > 0 && allTimeValue > 0 {
 		allTimeFloat = divideValueOf(allTimeValue, allTimeOf, isPercentage)
 		fmtStringFixed := fmtString.AllTime
 		if fmtStringFixed == "" {
@@ -90,11 +91,20 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 			Content:     icon,
 		}
 
-		sessionRowContent = append([]block.Block{iconContent}, sessionRowContent...)
-
 		iconInvisible := iconContent
 		iconInvisible.Style.Invisible = true
-		sessionRowContent = append(sessionRowContent, iconInvisible)
+
+		if input.Options.Block.IconPosition == style.IconPositionLeft {
+			sessionRowContent = append([]block.Block{iconContent}, sessionRowContent...)
+			if input.Options.Block.HasInvisibleIcon {
+				sessionRowContent = append(sessionRowContent, iconInvisible)
+			}
+		} else {
+			if input.Options.Block.HasInvisibleIcon {
+				sessionRowContent = append([]block.Block{iconInvisible}, sessionRowContent...)
+			}
+			sessionRowContent = append(sessionRowContent, iconContent)
+		}
 	}
 	rows = append(rows, block.Block{
 		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),

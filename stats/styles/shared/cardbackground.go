@@ -8,7 +8,6 @@ import (
 
 var CardBackground = style.Style{
 	Color:        color.RGBA{R: 255, G: 255, B: 255, A: 255},
-	Grow:         true,
 	PaddingX:     0.5,
 	PaddingY:     0.5,
 	BorderRadius: 30,

@@ -5,6 +5,7 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
 	"github.com/byvko-dev/am-core/logs"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
@@ -41,14 +42,21 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 		logs.Warning("GeneratePlayerCard: pins not implemented yet")
 	}
 
+	fullName := []block.Block{{
+		ContentType: block.ContentTypeBlocks,
+		Content:     contentElements,
+		Style:       styles.LoadWithTags(styleName, "player_name"),
+		Tags:        []string{"player_name"},
+	}}
+
 	return block.Block{
 		Tags:        []string{"card"},
 		Style:       styles.LoadWithTags(styleName, "card"),
 		ContentType: block.ContentTypeBlocks,
 		Content: []block.Block{{
 			ContentType: block.ContentTypeBlocks,
-			Content:     contentElements,
-			Style:       styles.LoadWithTags(styleName, "player_name"),
-			Tags:        []string{"player_name"},
+			Content:     fullName,
+			Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "player_name_container", "growX")),
+			Tags:        []string{"player_name_container", "growX"},
 		}}}, nil
 }

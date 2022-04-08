@@ -61,9 +61,10 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 		cardRows = append(cardRows, block.Block{
 			ContentType: block.ContentTypeBlocks,
 			Content: []block.Block{{
-				Content: label,
-				Tags:    []string{"overview_title"},
-				Style:   styles.LoadWithTags(styleName, "overview_title"),
+				ContentType: block.ContentTypeText,
+				Content:     label,
+				Tags:        []string{"overview_title"},
+				Style:       styles.LoadWithTags(styleName, "overview_title"),
 			}},
 			Tags:  []string{"overview_title_row", "overview_title"},
 			Style: styles.LoadWithTags(styleName, "overview_title_row", "overview_title"),
@@ -72,13 +73,21 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Style:       styles.LoadWithTags(styleName, "content"),
+		Tags:        []string{"rating_overview_rows", "growX"},
+		Style:       styles.LoadWithTags(styleName, "growX", "rating_overview_rows"),
 	})
-	return block.Block{
-		Tags:        []string{"card", "rating_overview"},
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card", "rating_overview")),
+	cardContent := block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     cardRows,
+		Tags:        []string{"rating_overview", "growX", "gap50"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "growX", "rating_overview", "gap50")),
+	}
+
+	return block.Block{
+		Tags:        []string{"card"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card")),
+		ContentType: block.ContentTypeBlocks,
+		Content:     []block.Block{cardContent},
 	}, nil
 }
 
@@ -86,6 +95,9 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 	var rowContent []block.Block
 	for _, block := range options.Blocks {
 		if block.GenerationTag == stats.BlockWN8Rating.GenerationTag {
+			if statsData.SessionStats.SessionRating < 0 && statsData.PlayerDetails.CareerWN8 < 0 {
+				continue
+			}
 			var input types.DataprepInput
 			input.Options.WithAllTime = options.WithAllTimeStats
 			input.Options.WithIcons = options.WithIcons
@@ -136,12 +148,19 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Style:       styles.LoadWithTags(styleName, "content"),
+		Tags:        []string{"overview_stats_row", "growX", "gap50"},
+		Style:       styles.LoadWithTags(styleName, "overview_stats_row", "growX", "gap50"),
 	})
-	return block.Block{
-		Tags:        []string{"card"},
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card", "random_overview")),
+	cardContent := block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     cardRows,
+		Tags:        []string{"random_overview", "growX"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "random_overview", "growX")),
+	}
+	return block.Block{
+		Tags:        []string{"card"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card")),
+		ContentType: block.ContentTypeBlocks,
+		Content:     []block.Block{cardContent},
 	}, nil
 }

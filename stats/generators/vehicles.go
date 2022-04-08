@@ -76,6 +76,9 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 			input.Options.Style = styleName
 			input.Options.Block = b
 			input.Localizer = localizer
+			if vehicle.TankWN8 < 0 {
+				continue
+			}
 
 			block, err := dataprep.WN8RatingBlock(input, vehicle.TankWN8, 0)
 			if err != nil {
@@ -145,13 +148,14 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Style:       styles.LoadWithTags(styleName, "content"),
+		Style:       styles.LoadWithTags(styleName, "vehicle_row_content", "growX", "gap50"),
+		Tags:        []string{"vehicle_row_content", "growX", "gap50"},
 	})
 	return block.Block{
 		ContentType: block.ContentTypeBlocks,
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "vehicle_overview")),
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "vehicle_overview", "growX", "gap25")),
 		Content:     cardRows,
-		Tags:        []string{"vehicle_overview"},
+		Tags:        []string{"vehicle_overview", "growX", "gap25"},
 	}, nil
 }
 

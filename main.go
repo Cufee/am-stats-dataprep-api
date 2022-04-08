@@ -7,9 +7,7 @@ import (
 	database "byvko.dev/repo/am-stats-dataprep-api/database/init"
 	"byvko.dev/repo/am-stats-dataprep-api/handlers/settings"
 	"byvko.dev/repo/am-stats-dataprep-api/handlers/stats"
-	"github.com/byvko-dev/am-core/helpers/env"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
@@ -19,14 +17,6 @@ func main() {
 
 	// Logger
 	app.Use(logger.New())
-
-	// CORS
-	origins := env.MustGet("CORS_ALLOW_ORIGINS")[0].(string)
-	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "Origin, Content-Type, Accept",
-		AllowOrigins:     origins,
-		AllowCredentials: true,
-	}))
 
 	apiV1 := app.Group("/v1")
 

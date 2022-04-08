@@ -13,10 +13,11 @@ type DataprepInput struct {
 		AllTime statistics.StatsFrame
 	}
 	Options struct {
-		WithLabel   bool
-		WithIcons   bool
-		WithAllTime bool
-		Block       settings.BlockOptions
-		Style       string
+		WithLabel         bool
+		WithIcons         bool
+		WithInvisibleIcon bool
+		WithAllTime       bool
+		Block             settings.BlockOptions
+		Style             string
 	}
 }

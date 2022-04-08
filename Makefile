@@ -21,5 +21,5 @@ push:
 	docker push ${TAG}:latest
 
 restart:
-	kubectl rollout restart deployment/${SERVICE} -n ${NAMESPACE}
+	kubectl rollout restart deployment/am-dataprep-api -n ${NAMESPACE}
 	

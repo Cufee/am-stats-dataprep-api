@@ -27,12 +27,12 @@ var card = style.Style{
 		B: 30,
 		A: 204,
 	},
-	Grow:         true,
+	GrowX:        true,
 	PaddingX:     0.75,
 	PaddingY:     0.5,
 	BorderRadius: 20,
 }
-var cardContent = shared.Gap25
+var cardContent = shared.Gap50.Merge(shared.GrowX).Merge(shared.GrowY)
 var wrapper = shared.Gap50.Merge(shared.Padding100)
 var icon = style.Style{
 	FontSize: shared.DefaultFont.FontSize * 0.5,
@@ -52,6 +52,18 @@ func Load(tags ...string) style.Style {
 	}
 	if slices.Contains(tags, "large") > -1 {
 		style = style.Merge(largeText)
+	}
+	if slices.Contains(tags, "gap25") > -1 {
+		style = style.Merge(shared.Gap25)
+	}
+	if slices.Contains(tags, "gap50") > -1 {
+		style = style.Merge(shared.Gap50)
+	}
+	if slices.Contains(tags, "growX") > -1 {
+		style = style.Merge(shared.GrowX)
+	}
+	if slices.Contains(tags, "growY") > -1 {
+		style = style.Merge(shared.GrowY)
 	}
 	if slices.Contains(tags, "card") > -1 {
 		style = style.Merge(card).Merge(shared.Gap25)
@@ -77,6 +89,10 @@ func Load(tags ...string) style.Style {
 	}
 	if helpers.SliceContains(tags, []string{"label", "title_row", "overview_title"}) {
 		style = style.Merge(shared.Gap25)
+	}
+
+	if slices.Contains(tags, "debug") > -1 {
+		style = style.Merge(shared.DebugBackground)
 	}
 	return style
 }
