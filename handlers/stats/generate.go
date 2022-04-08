@@ -31,7 +31,7 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 	}
 
 	// Get stats
-	statsData, err := statsapi.GetStatsByPlayerID(request.PID, request.Realm, request.Days)
+	statsData, err := statsapi.GetStatsFromRequest(request)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error getting stats",

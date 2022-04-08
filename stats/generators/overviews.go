@@ -73,14 +73,14 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Tags:        []string{"rating_overview_rows", "growX"},
-		Style:       styles.LoadWithTags(styleName, "growX", "rating_overview_rows"),
+		Tags:        []string{"rating_overview_rows", "growX", "statsContent"},
+		Style:       styles.LoadWithTags(styleName, "growX", "rating_overview_rows", "statsContent"),
 	})
 	cardContent := block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     cardRows,
-		Tags:        []string{"rating_overview", "growX", "gap50"},
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "growX", "rating_overview", "gap50")),
+		Tags:        []string{"rating_overview", "growX", "gap50", "statsContent"},
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "growX", "rating_overview", "gap50", "statsContent")),
 	}
 
 	return block.Block{
@@ -148,8 +148,8 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Tags:        []string{"overview_stats_row", "growX", "gap50"},
-		Style:       styles.LoadWithTags(styleName, "overview_stats_row", "growX", "gap50"),
+		Tags:        []string{"overview_stats_row", "growX", "gap50", "statsContent"},
+		Style:       styles.LoadWithTags(styleName, "overview_stats_row", "growX", "gap50", "statsContent"),
 	})
 	cardContent := block.Block{
 		ContentType: block.ContentTypeBlocks,

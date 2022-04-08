@@ -148,8 +148,8 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Style:       styles.LoadWithTags(styleName, "vehicle_row_content", "growX", "gap50"),
-		Tags:        []string{"vehicle_row_content", "growX", "gap50"},
+		Style:       styles.LoadWithTags(styleName, "vehicle_row_content", "growX", "gap50", "statsContent"),
+		Tags:        []string{"vehicle_row_content", "growX", "gap50", "statsContent"},
 	})
 	return block.Block{
 		ContentType: block.ContentTypeBlocks,

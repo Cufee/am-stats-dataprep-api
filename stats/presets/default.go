@@ -48,7 +48,7 @@ var DefaultOptions = settings.Options{
 		WithIcons:        true,
 		WithAllTimeStats: true,
 		Type:             settings.OverviewTypeRegular,
-		Blocks:           []settings.BlockOptions{types.BlockBattles, types.BlockAverageDamage.WithIcon().WithInvisibleIcon(), types.BlockWinrate.WithInvisibleIcon(), types.BlockShotAccuracy.WithIcon().WithInvisibleIcon(), types.BlockWN8Rating.WithIcon().WithInvisibleIcon()},
+		Blocks:           []settings.BlockOptions{types.BlockBattles, types.BlockAverageDamage.WithIcon().WithInvisibleIcon(), types.BlockWinrate.WithIcon().WithInvisibleIcon(), types.BlockShotAccuracy.WithIcon().WithInvisibleIcon(), types.BlockWN8Rating.WithIcon().WithInvisibleIcon()},
 	},
 	VehiclesFull: settings.VehicleOptions{
 		Include:          true,

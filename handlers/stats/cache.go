@@ -101,7 +101,7 @@ func CacheStatsFromOptions(c *fiber.Ctx) error {
 	}
 
 	// Get stats
-	statsData, err := statsapi.GetStatsByPlayerID(request.PID, request.Realm, 0)
+	statsData, err := statsapi.GetStatsFromRequest(request)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error getting stats",

@@ -20,6 +20,9 @@ var smallText = style.Style{
 var mediumText = style.Style{
 	Color: color.RGBA{R: 204, G: 204, B: 204, A: 255},
 }
+var statsContent = style.Style{
+	PaddingLeft: 0.75,
+}
 var card = style.Style{
 	BackgroundColor: color.RGBA{
 		R: 30,
@@ -27,10 +30,12 @@ var card = style.Style{
 		B: 30,
 		A: 204,
 	},
-	GrowX:        true,
-	PaddingX:     0.75,
-	PaddingY:     0.5,
-	BorderRadius: 20,
+	GrowX:         true,
+	PaddingLeft:   0.5,
+	PaddingRight:  0.5,
+	PaddingTop:    0.5,
+	PaddingBottom: 0.5,
+	BorderRadius:  20,
 }
 var cardContent = shared.Gap50.Merge(shared.GrowX).Merge(shared.GrowY)
 var wrapper = shared.Gap50.Merge(shared.Padding100)
@@ -79,6 +84,9 @@ func Load(tags ...string) style.Style {
 	}
 	if slices.Contains(tags, "player_name") > -1 {
 		style = style.Merge(shared.Gap25)
+	}
+	if slices.Contains(tags, "statsContent") > -1 {
+		style = style.Merge(statsContent)
 	}
 
 	if helpers.SliceContains(tags, []string{"alltime", "overview_title", "winrate_with_battles_battles", "vehicleName"}) {
