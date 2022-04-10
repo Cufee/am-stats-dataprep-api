@@ -26,14 +26,14 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 
 	var sessionString string = "-"
 	var sessionFloat float64 = 0
-	if sessionOf > 0 && sessionValue > 0 {
+	if sessionOf > 0 && sessionValue >= 0 {
 		sessionFloat = divideValueOf(sessionValue, sessionOf, isPercentage)
 		sessionString = fmt.Sprintf(fmt.Sprintf(fmtString.Session, getFormattedString(isPercentage)), sessionFloat)
 	}
 
 	var allTimeString string = "-"
 	var allTimeFloat float64 = 0
-	if allTimeOf > 0 && allTimeValue > 0 {
+	if allTimeOf > 0 && allTimeValue >= 0 {
 		allTimeFloat = divideValueOf(allTimeValue, allTimeOf, isPercentage)
 		fmtStringFixed := fmtString.AllTime
 		if fmtStringFixed == "" {
@@ -44,8 +44,7 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 
 	// Session content
 	sessionRowContent = append(sessionRowContent, block.Block{
-		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),
-		Style:       styles.LoadWithTags(input.Options.Style, append([]string{input.Options.Block.GenerationTag, TagSession}, tags...)...),
+		Style:       styles.LoadWithTags(input.Options.Style, append([]string{input.Options.Block.GenerationTag, TagSession, TagSession + "Value"}, tags...)...),
 		ContentType: block.ContentTypeText,
 		Content:     sessionString,
 	})
@@ -59,34 +58,43 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 		if iconsDict == nil {
 			iconsDict = icons.IconsArrows
 		}
-		// TagInvisible
 
-		if sessionFloat > allTimeFloat {
-			if icon.Style.Color == (color.RGBA{}) {
+		icon.Content = icons.IconsLines[icons.IconDirectionHorizontal]
+		hasColor := icon.Style.Color != (color.RGBA{})
+		if !hasColor {
+			icon.Style.Color = icons.IconColorNeutral
+		}
+		if sessionFloat > allTimeFloat { // Session is better than all time
+			if !hasColor {
 				icon.Style.Color = icons.IconColorGreen
-				if sessionFloat/allTimeFloat > 1.6 {
+			}
+			icon.Content = iconsDict[icons.IconDirectionUpSmall]
+			if sessionFloat/allTimeFloat > 1.6 {
+				if !hasColor {
 					icon.Style.Color = icons.IconColorPurple
-				} else if sessionFloat/allTimeFloat > 1.4 {
+				}
+				icon.Content = iconsDict[icons.IconDirectionUpLarge]
+			} else if sessionFloat/allTimeFloat > 1.4 {
+				if !hasColor {
 					icon.Style.Color = icons.IconColorTeal
 				}
+				icon.Content = iconsDict[icons.IconDirectionUpLarge]
 			}
-			icon.Content = iconsDict[icons.IconDirectionUp]
-		} else if sessionFloat < allTimeFloat {
-			if icon.Style.Color == (color.RGBA{}) {
+
+		} else if sessionFloat < allTimeFloat { // All time is netter than session
+			if !hasColor {
 				icon.Style.Color = icons.IconColorRed
-				if sessionFloat/allTimeFloat > 0.9 {
+			}
+			icon.Content = iconsDict[icons.IconDirectionDownLarge]
+			if sessionFloat/allTimeFloat > 0.9 {
+				if !hasColor {
 					icon.Style.Color = icons.IconColorYellow
 				}
+				icon.Content = iconsDict[icons.IconDirectionDownSmall]
 			}
-			icon.Content = iconsDict[icons.IconDirectionDown]
-		} else if icon.Style.Color == (color.RGBA{}) {
-			icon.Style.Color = icons.IconColorNeutral
-			icon.Content = icons.IconsLines[icons.IconDirectionLeft] // same as right and will be horizontal
 		}
-
 		iconContent := block.Block{
-			Tags:        []string{input.Options.Block.GenerationTag, TagIcon, TagSession},
-			Style:       styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag, TagIcon, TagSession),
+			Style:       styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag, TagIcon, TagSession+"Icon"),
 			ContentType: block.ContentTypeIcon,
 			Content:     icon,
 		}
@@ -107,8 +115,7 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 		}
 	}
 	rows = append(rows, block.Block{
-		Tags:        append([]string{input.Options.Block.GenerationTag, TagSession}, tags...),
-		Style:       styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag, TagIcon, TagSession),
+		Style:       styles.LoadWithTags(input.Options.Style, append(tags, input.Options.Block.GenerationTag, TagIcon+"Row", TagSession)...),
 		ContentType: block.ContentTypeBlocks,
 		Content:     sessionRowContent,
 	})
@@ -116,13 +123,11 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 	// All time content
 	if input.Options.WithAllTime {
 		allTimeRowContent = append(allTimeRowContent, block.Block{
-			Tags:        append([]string{input.Options.Block.GenerationTag, TagAllTime}, tags...),
 			Style:       styles.LoadWithTags(input.Options.Style, append([]string{input.Options.Block.GenerationTag, TagAllTime}, tags...)...),
 			ContentType: block.ContentTypeText,
 			Content:     allTimeString,
 		})
 		rows = append(rows, block.Block{
-			Tags:        append([]string{input.Options.Block.GenerationTag, TagAllTime}, tags...),
 			Style:       styles.LoadWithTags(input.Options.Style, append([]string{input.Options.Block.GenerationTag, TagAllTime}, tags...)...),
 			ContentType: block.ContentTypeBlocks,
 			Content:     allTimeRowContent,
@@ -135,8 +140,7 @@ func PrepContentRows(input dataprep.DataprepInput, fmtString FmtStr, isPercentag
 			MessageID: input.Options.Block.LocalizationTag,
 		})
 		rows = append(rows, block.Block{
-			Tags:        []string{input.Options.Block.GenerationTag, TagLabel},
-			Style:       styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag, TagLabel),
+			Style:       styles.LoadWithTags(input.Options.Style, append(tags, input.Options.Block.GenerationTag, TagLabel)...),
 			ContentType: block.ContentTypeText,
 			Content:     label,
 		},

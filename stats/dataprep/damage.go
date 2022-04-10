@@ -16,10 +16,15 @@ func AvarageDamageBlock(input types.DataprepInput) (block.Block, error) {
 	}
 
 	var b block.Block
-	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
-	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
+	if input.Stats.AllTime.Battles == 0 {
+		input.Options.WithAllTime = false
+		input.Options.Block.HasIcon = false
+	}
 	b.ContentType = block.ContentTypeBlocks
-	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.DamageDealt), (input.Stats.Session.Battles), (input.Stats.AllTime.DamageDealt), (input.Stats.AllTime.Battles))
+	fixTag := fmt.Sprintf("fixIcon-%v", input.Options.Block.HasIcon && input.Options.Block.HasInvisibleIcon)
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag+"Block"))
+	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.DamageDealt), (input.Stats.Session.Battles), (input.Stats.AllTime.DamageDealt), (input.Stats.AllTime.Battles), fixTag)
+	b.Tags = append(b.Tags, fixTag)
 	return b, nil
 }
 
@@ -29,9 +34,14 @@ func DamageDoneBlock(input types.DataprepInput) (block.Block, error) {
 	}
 
 	var b block.Block
-	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
-	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
+	if input.Stats.AllTime.DamageDealt == 0 {
+		input.Options.WithAllTime = false
+		input.Options.Block.HasIcon = false
+	}
 	b.ContentType = block.ContentTypeBlocks
-	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.DamageDealt), 1, (input.Stats.AllTime.DamageDealt), 1)
+	fixTag := fmt.Sprintf("fixIcon-%v", input.Options.Block.HasIcon && input.Options.Block.HasInvisibleIcon)
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag+"Block"))
+	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.DamageDealt), 1, (input.Stats.AllTime.DamageDealt), 1, fixTag)
+	b.Tags = append(b.Tags, fixTag)
 	return b, nil
 }

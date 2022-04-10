@@ -1,11 +1,10 @@
-package presets
+package minimal
 
 import (
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 )
 
-var MinimalOptions = settings.Options{
+var Options = settings.Options{
 	AccountStatus: settings.StatusIconsOptions{
 		Include: false,
 	},
@@ -22,13 +21,13 @@ var MinimalOptions = settings.Options{
 		Include:    true,
 		WithLabels: true,
 		Type:       settings.OverviewTypeRating,
-		Blocks:     []settings.BlockOptions{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
+		Blocks:     []settings.BlockOptions{BlockBattles, BlockWinrate, BlockAverageDamage, BlockShotAccuracy},
 	},
 	RegularBattles: settings.OverviewOptions{
 		Include:    true,
 		WithLabels: true,
 		Type:       settings.OverviewTypeRegular,
-		Blocks:     []settings.BlockOptions{types.BlockBattles, types.BlockWinrate, types.BlockAverageDamage, types.BlockShotAccuracy},
+		Blocks:     []settings.BlockOptions{BlockBattles, BlockWinrate, BlockAverageDamage, BlockShotAccuracy},
 	},
 	VehiclesFull: settings.VehicleOptions{
 		Include: false,

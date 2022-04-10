@@ -4,31 +4,31 @@ import (
 	"fmt"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
-	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/presets/shared"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
 )
 
 func BlockFromStats(input types.DataprepInput) (block.Block, error) {
 	switch input.Options.Block.GenerationTag {
 	// Battles
-	case stats.BlockBattles.GenerationTag:
+	case shared.GenerationTagBattles:
 		return BattlesBlock(input)
 
-	case stats.BlockWinrate.GenerationTag:
+	case shared.GenerationTagWinrate:
 		return WinrateBlock(input)
 
-	case stats.BlockWinrateWithBattles.GenerationTag:
+	case shared.GenerationTagWinrateWithBattles:
 		return WinrateWithBattlesBlock(input)
 
 		// Damage
-	case stats.BlockDamageDone.GenerationTag:
-		return BattlesBlock(input)
+	case shared.GenerationTagDamageDone:
+		return DamageDoneBlock(input)
 
-	case stats.BlockAverageDamage.GenerationTag:
+	case shared.GenerationTagAverageDamage:
 		return AvarageDamageBlock(input)
 
 	// Accuracy
-	case stats.BlockShotAccuracy.GenerationTag:
+	case shared.GenerationTagShotAccuracy:
 		return ShotAccuracyBlock(input)
 
 	default:

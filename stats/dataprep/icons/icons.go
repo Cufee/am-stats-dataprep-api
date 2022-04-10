@@ -1,6 +1,8 @@
 package icons
 
 import (
+	"fmt"
+
 	"byvko.dev/repo/am-stats-dataprep-api/stats/helpers"
 )
 
@@ -15,39 +17,43 @@ var (
 	IconColorPurple  = helpers.HexToColor("#c084fc")
 	IconColorNeutral = helpers.HexToColor("#94a3b8")
 
-	IconDirectionUp    = "up"
-	IconDirectionDown  = "down"
-	IconDirectionLeft  = "left"
-	IconDirectionRight = "right"
+	IconDirectionUpSmall   = "upSmall"
+	IconDirectionUpLarge   = "upLarge"
+	IconDirectionDownSmall = "downSmall"
+	IconDirectionDownLarge = "downLarge"
+	IconSizeVariations     = []string{IconDirectionUpSmall, IconDirectionUpLarge, IconDirectionDownSmall, IconDirectionDownLarge}
+
+	IconDirectionHorizontal = "horizontal"
+	IconDirectionVertical   = "vertical"
 )
 
 var IconsLines = make(map[string]string)
 var IconsCircle = make(map[string]string)
 var IconsArrows = make(map[string]string)
-var IconsTriangles = make(map[string]string)
+var IconsRatingWithLevels = make(map[int]map[string]string)
 
 func init() {
-	IconsCircle[""] = "circle"
-	IconsCircle[IconDirectionUp] = "circle"
-	IconsCircle[IconDirectionDown] = "circle"
-	IconsCircle[IconDirectionLeft] = "circle"
-	IconsCircle[IconDirectionRight] = "circle"
+	IconsCircle[IconDirectionUpSmall] = "circle"
+	IconsCircle[IconDirectionUpLarge] = "circle"
+	IconsCircle[IconDirectionDownLarge] = "circle"
+	IconsCircle[IconDirectionDownSmall] = "circle"
 
-	IconsArrows[""] = ""
-	IconsArrows[IconDirectionUp] = "arrowUp"
-	IconsArrows[IconDirectionDown] = "arrowDown"
-	IconsArrows[IconDirectionLeft] = "arrowLeft"
-	IconsArrows[IconDirectionRight] = "arrowRight"
+	IconsArrows[IconDirectionUpSmall] = "singleArrowUp"
+	IconsArrows[IconDirectionUpLarge] = "doubleArrowUp"
+	IconsArrows[IconDirectionDownLarge] = "doubleArrowDown"
+	IconsArrows[IconDirectionDownSmall] = "singleArrowDown"
 
-	IconsLines[""] = ""
-	IconsLines[IconDirectionDown] = "lineVertical"
-	IconsLines[IconDirectionRight] = "lineVertical"
-	IconsLines[IconDirectionLeft] = "lineHorizontal"
-	IconsLines[IconDirectionUp] = "lineHorizontal"
+	IconsLines[IconDirectionVertical] = "lineVertical"
+	IconsLines[IconDirectionHorizontal] = "lineHorizontal"
 
-	IconsTriangles[""] = ""
-	IconsTriangles[IconDirectionUp] = "triangleUp"
-	IconsTriangles[IconDirectionDown] = "triangleDown"
-	IconsTriangles[IconDirectionLeft] = "triangleLeft"
-	IconsTriangles[IconDirectionRight] = "triangleRight"
+	for level := 1; level <= 3; level++ {
+		IconsRatingWithLevels[level] = make(map[string]string)
+		for _, size := range IconSizeVariations {
+			IconsRatingWithLevels[level][size] = "rating-" + fmt.Sprint(level)
+		}
+	}
+}
+
+func IconsRating(level int) map[string]string {
+	return IconsRatingWithLevels[level]
 }

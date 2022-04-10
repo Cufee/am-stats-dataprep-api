@@ -21,7 +21,6 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 	if options.WithName {
 		// Player name
 		contentElements = append(contentElements, block.Block{
-			Tags:        []string{utils.TagPlayerName},
 			Style:       styles.LoadWithTags(styleName, utils.TagPlayerName),
 			ContentType: block.ContentTypeText,
 			Content:     stats.PlayerDetails.Name,
@@ -31,7 +30,6 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 	// Clan tag if it exists
 	if options.WithClanTag && stats.PlayerDetails.ClanTag != "" {
 		contentElements = append(contentElements, block.Block{
-			Tags:        []string{utils.TagPlayerClan},
 			Style:       styles.LoadWithTags(styleName, utils.TagPlayerClan),
 			ContentType: block.ContentTypeText,
 			Content:     fmt.Sprintf("[%s]", stats.PlayerDetails.ClanTag),
@@ -45,18 +43,15 @@ func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOption
 	fullName := []block.Block{{
 		ContentType: block.ContentTypeBlocks,
 		Content:     contentElements,
-		Style:       styles.LoadWithTags(styleName, "player_name"),
-		Tags:        []string{"player_name"},
+		Style:       styles.LoadWithTags(styleName, "playerName"),
 	}}
 
 	return block.Block{
-		Tags:        []string{"card"},
 		Style:       styles.LoadWithTags(styleName, "card"),
 		ContentType: block.ContentTypeBlocks,
 		Content: []block.Block{{
 			ContentType: block.ContentTypeBlocks,
 			Content:     fullName,
-			Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "player_name_container", "growX")),
-			Tags:        []string{"player_name_container", "growX"},
+			Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "playerNameContainer")),
 		}}}, nil
 }

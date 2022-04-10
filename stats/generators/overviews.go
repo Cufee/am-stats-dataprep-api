@@ -5,9 +5,10 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
+	tags "byvko.dev/repo/am-stats-dataprep-api/stats/presets/shared"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
-	stats "byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-core/helpers/slices"
 	"github.com/byvko-dev/am-core/logs"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
@@ -29,7 +30,7 @@ func GenerateOverviewCard(statsData *api.PlayerRawStats, options settings.Overvi
 func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	var rowContent []block.Block
 	for _, block := range options.Blocks {
-		if block.GenerationTag == stats.BlockWN8Rating.GenerationTag {
+		if block.GenerationTag == tags.GenerationTagWN8Rating {
 			logs.Warning("generateRatingOverviewCard: error generating rating block for %v: rating battles have no WN8", statsData.PlayerDetails.ID)
 			continue
 		}
@@ -63,28 +64,33 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 			Content: []block.Block{{
 				ContentType: block.ContentTypeText,
 				Content:     label,
-				Tags:        []string{"overview_title"},
-				Style:       styles.LoadWithTags(styleName, "overview_title"),
+				Style:       styles.LoadWithTags(styleName, "overviewTitle"),
 			}},
-			Tags:  []string{"overview_title_row", "overview_title"},
-			Style: styles.LoadWithTags(styleName, "overview_title_row", "overview_title"),
+			Style: styles.LoadWithTags(styleName, "overviewTitleRow"),
 		})
 	}
+
+	// Find fixtag
+	fixTag := "fixIcon-false"
+	for _, b := range rowContent {
+		if slices.Contains(b.Tags, "fixIcon-true") > -1 {
+			fixTag = "fixIcon-true"
+			break
+		}
+	}
+
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Tags:        []string{"rating_overview_rows", "growX", "statsContent"},
-		Style:       styles.LoadWithTags(styleName, "growX", "rating_overview_rows", "statsContent"),
+		Style:       styles.LoadWithTags(styleName, "growX", "ratingOverviewRows", "statsContent", fixTag),
 	})
 	cardContent := block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     cardRows,
-		Tags:        []string{"rating_overview", "growX", "gap50", "statsContent"},
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "growX", "rating_overview", "gap50", "statsContent")),
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "growX", "ratingOverview", "gap50", "statsContent")),
 	}
 
 	return block.Block{
-		Tags:        []string{"card"},
 		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card")),
 		ContentType: block.ContentTypeBlocks,
 		Content:     []block.Block{cardContent},
@@ -94,7 +100,7 @@ func generateRatingOverviewCard(statsData *api.PlayerRawStats, options settings.
 func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.OverviewOptions, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	var rowContent []block.Block
 	for _, block := range options.Blocks {
-		if block.GenerationTag == stats.BlockWN8Rating.GenerationTag {
+		if block.GenerationTag == tags.GenerationTagWN8Rating {
 			if statsData.SessionStats.SessionRating < 0 && statsData.PlayerDetails.CareerWN8 < 0 {
 				continue
 			}
@@ -141,24 +147,29 @@ func generateRandomOverviewCard(statsData *api.PlayerRawStats, options settings.
 		cardRows = append(cardRows, block.Block{
 			ContentType: block.ContentTypeText,
 			Content:     label,
-			Tags:        []string{"overview_title"},
-			Style:       styles.LoadWithTags(styleName, "overview_title_row"),
+			Style:       styles.LoadWithTags(styleName, "overviewTitle"),
 		})
+	}
+
+	// Find fixtag
+	fixTag := "fixIcon-false"
+	for _, b := range rowContent {
+		if slices.Contains(b.Tags, "fixIcon-true") > -1 {
+			fixTag = "fixIcon-true"
+			break
+		}
 	}
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Tags:        []string{"overview_stats_row", "growX", "gap50", "statsContent"},
-		Style:       styles.LoadWithTags(styleName, "overview_stats_row", "growX", "gap50", "statsContent"),
+		Style:       styles.LoadWithTags(styleName, "overviewStatsRow", "statsContent", fixTag),
 	})
 	cardContent := block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     cardRows,
-		Tags:        []string{"random_overview", "growX"},
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "random_overview", "growX")),
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "randomOverview")),
 	}
 	return block.Block{
-		Tags:        []string{"card"},
 		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "card")),
 		ContentType: block.ContentTypeBlocks,
 		Content:     []block.Block{cardContent},

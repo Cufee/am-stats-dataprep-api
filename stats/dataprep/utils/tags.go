@@ -3,7 +3,7 @@ package utils
 const (
 	TagInvisible = "invisible"
 	TagSession   = "session"
-	TagAllTime   = "alltime"
+	TagAllTime   = "allTime"
 	TagLabel     = "label"
 	TagIcon      = "icon"
 

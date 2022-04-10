@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"byvko.dev/repo/am-stats-dataprep-api/stats/presets/fallback"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/presets/minimal"
+
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 )
 
@@ -22,14 +25,14 @@ func TestGetPresetByName(t *testing.T) {
 			args: args{
 				name: "minimal",
 			},
-			want: MinimalOptions,
+			want: minimal.Options,
 		},
 		{
 			name: "default",
 			args: args{
 				name: "default",
 			},
-			want: DefaultOptions,
+			want: fallback.Options,
 		},
 	}
 	for _, tt := range tests {

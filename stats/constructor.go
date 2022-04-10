@@ -118,7 +118,6 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options
 		ContentType: block.ContentTypeBlocks,
 		Content:     cards,
 		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "wrapper")).Merge(bgStyle),
-		Tags:        []string{"wrapper"},
 	}
 
 	response.Cards = cardBlock

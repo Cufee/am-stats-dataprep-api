@@ -1,16 +1,15 @@
-package presets
+package legacy
 
 import (
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 )
 
 const (
-	defaultDetailedVehiclesLimit = 3
-	defaultSlimVehiclesLimit     = 4
+	legacyDetailedVehiclesLimit = 3
+	legacySlimVehiclesLimit     = 4
 )
 
-var DefaultOptions = settings.Options{
+var Options = settings.Options{
 	AccountStatus: settings.StatusIconsOptions{
 		Include: false, // Not complete
 		Limit:   3,
@@ -39,7 +38,7 @@ var DefaultOptions = settings.Options{
 		WithIcons:        true,
 		WithAllTimeStats: true,
 		Type:             settings.OverviewTypeRating,
-		Blocks:           []settings.BlockOptions{types.BlockBattles, types.BlockAverageDamage.WithIcon().WithInvisibleIcon(), types.BlockWinrate.WithIcon().WithInvisibleIcon(), types.BlockShotAccuracy.WithIcon().WithInvisibleIcon()},
+		Blocks:           []settings.BlockOptions{BlockBattles, BlockAverageDamage.WithIcon().WithInvisibleIcon(), BlockWinrate.WithIcon().WithInvisibleIcon(), BlockShotAccuracy.WithIcon().WithInvisibleIcon()},
 	},
 	RegularBattles: settings.OverviewOptions{
 		Include:          true,
@@ -48,26 +47,26 @@ var DefaultOptions = settings.Options{
 		WithIcons:        true,
 		WithAllTimeStats: true,
 		Type:             settings.OverviewTypeRegular,
-		Blocks:           []settings.BlockOptions{types.BlockBattles, types.BlockAverageDamage.WithIcon().WithInvisibleIcon(), types.BlockWinrate.WithIcon().WithInvisibleIcon(), types.BlockShotAccuracy.WithIcon().WithInvisibleIcon(), types.BlockWN8Rating.WithIcon().WithInvisibleIcon()},
+		Blocks:           []settings.BlockOptions{BlockBattles, BlockAverageDamage.WithIcon().WithInvisibleIcon(), BlockWinrate.WithIcon().WithInvisibleIcon(), BlockWN8Rating.WithIcon().WithInvisibleIcon()},
 	},
 	VehiclesFull: settings.VehicleOptions{
 		Include:          true,
-		Limit:            defaultDetailedVehiclesLimit,
+		Limit:            legacyDetailedVehiclesLimit,
 		WithVehicleTier:  true,
 		WithVehicleName:  true,
 		WithIcons:        true,
 		WithAllTimeStats: true,
 		WithLabels:       true,
-		Blocks:           []settings.BlockOptions{types.BlockBattles, types.BlockAverageDamage.WithIcon().WithInvisibleIcon(), types.BlockWinrate.WithIcon().WithInvisibleIcon(), types.BlockShotAccuracy.WithIcon().WithInvisibleIcon(), types.BlockWN8Rating.WithIcon().WithInvisibleIcon()},
+		Blocks:           []settings.BlockOptions{BlockBattles, BlockAverageDamage.WithIcon().WithInvisibleIcon(), BlockWinrate.WithIcon().WithInvisibleIcon(), BlockWN8Rating.WithIcon().WithInvisibleIcon()},
 	},
 	VehiclesSlim: settings.VehicleOptions{
-		Limit:            defaultSlimVehiclesLimit,
+		Limit:            legacySlimVehiclesLimit,
 		Include:          true,
 		WithVehicleTier:  true,
 		WithIcons:        true,
 		WithVehicleName:  true,
 		WithAllTimeStats: false,
 		WithLabels:       true,
-		Blocks:           []settings.BlockOptions{types.BlockAverageDamage, types.BlockWinrateWithBattles.WithIcon().WithInvisibleIcon(), types.BlockShotAccuracy.WithIcon().WithInvisibleIcon(), types.BlockWN8Rating.WithIcon().WithInvisibleIcon()},
+		Blocks:           []settings.BlockOptions{BlockAverageDamage, BlockWinrateWithBattles.WithIcon().WithInvisibleIcon(), BlockWN8Rating.WithIcon().WithInvisibleIcon()},
 	},
 }

@@ -17,10 +17,14 @@ func ShotAccuracyBlock(input types.DataprepInput) (block.Block, error) {
 	}
 
 	var b block.Block
-	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
-	b.Style = styles.LoadWithTags(input.Options.Style, b.Tags...)
+	if input.Stats.AllTime.Shots == 0 {
+		input.Options.WithAllTime = false
+		input.Options.Block.HasIcon = false
+	}
 	b.ContentType = block.ContentTypeBlocks
-	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
-	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, true, (input.Stats.Session.Hits), (input.Stats.Session.Shots), (input.Stats.AllTime.Hits), (input.Stats.AllTime.Shots))
+	fixTag := fmt.Sprintf("fixIcon-%v", input.Options.Block.HasIcon && input.Options.Block.HasInvisibleIcon)
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag+"Block"))
+	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, true, (input.Stats.Session.Hits), (input.Stats.Session.Shots), (input.Stats.AllTime.Hits), (input.Stats.AllTime.Shots), fixTag)
+	b.Tags = append(b.Tags, fixTag)
 	return b, nil
 }

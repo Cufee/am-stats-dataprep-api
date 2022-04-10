@@ -17,10 +17,15 @@ func BattlesBlock(input types.DataprepInput) (block.Block, error) {
 	}
 
 	var b block.Block
-	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
-	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.Battles), 1, (input.Stats.AllTime.Battles), 1)
-	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
+	if input.Stats.AllTime.Battles == 0 {
+		input.Options.WithAllTime = false
+		input.Options.Block.HasIcon = false
+	}
+	fixTag := fmt.Sprintf("fixIcon-%v", input.Options.Block.HasIcon && input.Options.Block.HasInvisibleIcon)
+	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, false, (input.Stats.Session.Battles), 1, (input.Stats.AllTime.Battles), 1, fixTag)
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag+"Block"))
 	b.ContentType = block.ContentTypeBlocks
+	b.Tags = append(b.Tags, fixTag)
 	return b, nil
 }
 
@@ -30,10 +35,15 @@ func WinrateBlock(input types.DataprepInput) (block.Block, error) {
 	}
 
 	var b block.Block
-	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
-	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, true, (input.Stats.Session.Wins), (input.Stats.Session.Battles), (input.Stats.AllTime.Wins), (input.Stats.AllTime.Battles))
-	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
+	if input.Stats.AllTime.Battles == 0 {
+		input.Options.WithAllTime = false
+		input.Options.Block.HasIcon = false
+	}
+	fixTag := fmt.Sprintf("fixIcon-%v", input.Options.Block.HasIcon && input.Options.Block.HasInvisibleIcon)
+	b.Content = utils.PrepContentRows(input, utils.FmtStr{Session: "%v"}, true, (input.Stats.Session.Wins), (input.Stats.Session.Battles), (input.Stats.AllTime.Wins), (input.Stats.AllTime.Battles), fixTag)
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag+"Block"))
 	b.ContentType = block.ContentTypeBlocks
+	b.Tags = append(b.Tags, fixTag)
 	return b, nil
 }
 
@@ -43,12 +53,17 @@ func WinrateWithBattlesBlock(input types.DataprepInput) (block.Block, error) {
 	}
 
 	var b block.Block
-	b.Tags = append(b.Tags, input.Options.Block.GenerationTag+"Block")
+	if input.Stats.AllTime.Battles == 0 {
+		input.Options.WithAllTime = false
+		input.Options.Block.HasIcon = false
+	}
 	var fmtString utils.FmtStr
 	fmtString.Session = "%v" + fmt.Sprintf(" (%v)", (input.Stats.Session.Battles))
 	fmtString.AllTime = "%v" + fmt.Sprintf(" (%v)", (input.Stats.AllTime.Battles))
-	b.Content = utils.PrepContentRows(input, fmtString, true, (input.Stats.Session.Wins), (input.Stats.Session.Battles), (input.Stats.AllTime.Wins), (input.Stats.AllTime.Battles))
-	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, b.Tags...))
+	fixTag := fmt.Sprintf("fixIcon-%v", input.Options.Block.HasIcon && input.Options.Block.HasInvisibleIcon)
+	b.Content = utils.PrepContentRows(input, fmtString, true, (input.Stats.Session.Wins), (input.Stats.Session.Battles), (input.Stats.AllTime.Wins), (input.Stats.AllTime.Battles), fixTag)
+	b.Style = shared.AlignVertical.Merge(styles.LoadWithTags(input.Options.Style, input.Options.Block.GenerationTag+"Block"))
 	b.ContentType = block.ContentTypeBlocks
+	b.Tags = append(b.Tags, fixTag)
 	return b, nil
 }

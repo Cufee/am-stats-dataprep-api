@@ -7,9 +7,10 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep"
 	prepTypes "byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/utils"
+	tags "byvko.dev/repo/am-stats-dataprep-api/stats/presets/shared"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/styles"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/styles/shared"
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
+	"github.com/byvko-dev/am-core/helpers/slices"
 	"github.com/byvko-dev/am-core/logs"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
@@ -57,7 +58,6 @@ func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOp
 		cards[card.index] = block.Block{
 			ContentType: block.ContentTypeBlocks,
 			Content:     []block.Block{card.card},
-			Tags:        []string{"card"},
 			Style:       styles.LoadWithTags(styleName, "card"),
 		}
 	}
@@ -68,7 +68,7 @@ func GenerateVehiclesCards(stats *api.PlayerRawStats, options settings.VehicleOp
 func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.VehicleOptions, vehicle *api.VehicleStats, localizer *i18n.Localizer, styleName string) (block.Block, error) {
 	var rowContent []block.Block
 	for _, b := range options.Blocks {
-		if b.GenerationTag == types.BlockWN8Rating.GenerationTag {
+		if b.GenerationTag == tags.GenerationTagWN8Rating {
 			var input prepTypes.DataprepInput
 			input.Options.WithAllTime = false // There is no all time WN8 rating for vehicles
 			input.Options.WithLabel = options.WithLabels
@@ -117,7 +117,6 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 			content = append(content, block.Block{
 				ContentType: block.ContentTypeText,
 				Content:     intToRoman(vehicle.TankTier),
-				Tags:        []string{utils.TagVehicleTier},
 				Style:       styles.LoadWithTags(styleName, utils.TagVehicleTier),
 			})
 		}
@@ -125,7 +124,6 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 			content = append(content, block.Block{
 				ContentType: block.ContentTypeText,
 				Content:     vehicle.TankName,
-				Tags:        []string{utils.TagVehicleName},
 				Style:       styles.LoadWithTags(styleName, utils.TagVehicleName),
 			})
 		}
@@ -136,26 +134,32 @@ func generateSingleVehicleCard(stats *api.PlayerRawStats, options settings.Vehic
 				{
 					ContentType: block.ContentTypeBlocks,
 					Content:     content,
-					Tags:        []string{utils.TagLabel},
 					Style:       styles.LoadWithTags(styleName, utils.TagLabel),
 				},
 			},
-			Tags:  []string{"title_row"},
-			Style: styles.LoadWithTags(styleName, "title_row"),
+			Style: styles.LoadWithTags(styleName, "titleRow"),
 		}
 		cardRows = append(cardRows, labelRow)
 	}
+
+	// Find fixtag
+	fixTag := "fixIcon-false"
+	for _, b := range rowContent {
+		if slices.Contains(b.Tags, "fixIcon-true") > -1 {
+			fixTag = "fixIcon-true"
+			break
+		}
+	}
+
 	cardRows = append(cardRows, block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     rowContent,
-		Style:       styles.LoadWithTags(styleName, "vehicle_row_content", "growX", "gap50", "statsContent"),
-		Tags:        []string{"vehicle_row_content", "growX", "gap50", "statsContent"},
+		Style:       styles.LoadWithTags(styleName, "vehicleRowContent", "statsContent", fixTag),
 	})
 	return block.Block{
 		ContentType: block.ContentTypeBlocks,
-		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "vehicle_overview", "growX", "gap25")),
+		Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "vehicleOverview")),
 		Content:     cardRows,
-		Tags:        []string{"vehicle_overview", "growX", "gap25"},
 	}, nil
 }
 
@@ -182,6 +186,6 @@ func intToRoman(i int) string {
 	case 10:
 		return "X"
 	default:
-		return fmt.Sprint(i)
+		return ""
 	}
 }

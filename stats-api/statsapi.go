@@ -40,7 +40,7 @@ func GetStatsByPlayerID(playerID int, realm string, days int) (*types.PlayerRawS
 
 func GetStatsFromRequest(request types.StatsRequest) (*types.PlayerRawStats, error) {
 	if request.PID == 0 || request.Realm == "" {
-		return nil, fmt.Errorf("playerID and realm are required")
+		return nil, parseStatsError(fmt.Errorf("playerID and realm are required"))
 	}
 
 	headers := make(map[string]string)
@@ -48,15 +48,18 @@ func GetStatsFromRequest(request types.StatsRequest) (*types.PlayerRawStats, err
 
 	payload, err := json.Marshal(request)
 	if err != nil {
-		return nil, logs.Wrap(err, "failed to marshal request")
+		return nil, parseStatsError(logs.Wrap(err, "failed to marshal request"))
 	}
 
 	var response types.PlayerRawStats
 	var url = fmt.Sprintf("%v/stats", StatsApiUrl)
 	_, err = requests.Send(url, "POST", headers, payload, &response)
 	if err != nil {
-		return nil, logs.Wrap(err, "Failed to get stats by player ID")
+		return nil, parseStatsError(logs.Wrap(err, "Failed to get stats by player ID"))
+	}
+	if response.Error != "" {
+		return nil, parseStatsError(fmt.Errorf(response.Error))
 	}
 
-	return &response, err
+	return &response, nil
 }
