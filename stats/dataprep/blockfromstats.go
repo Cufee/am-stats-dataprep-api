@@ -1,37 +1,35 @@
 package dataprep
 
 import (
-	"fmt"
-
-	"byvko.dev/repo/am-stats-dataprep-api/stats/dataprep/types"
-	"byvko.dev/repo/am-stats-dataprep-api/stats/presets/shared"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/shared"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/wargaming/v1/statistics"
 )
 
-func BlockFromStats(input types.DataprepInput) (block.Block, error) {
-	switch input.Options.Block.GenerationTag {
-	// Battles
-	case shared.GenerationTagBattles:
-		return BattlesBlock(input)
+func BlockFromStats(kind shared.LayoutKind, layoutName string, session, allTime statistics.StatsFrame) block.Block {
+	switch kind {
+	// // Battles
+	// case shared.GenerationTagBattles:
+	// 	return BattlesBlock(input)
 
-	case shared.GenerationTagWinrate:
-		return WinrateBlock(input)
+	// case shared.GenerationTagWinrate:
+	// 	return WinrateBlock(input)
 
-	case shared.GenerationTagWinrateWithBattles:
-		return WinrateWithBattlesBlock(input)
+	// case shared.GenerationTagWinrateWithBattles:
+	// 	return WinrateWithBattlesBlock(input)
 
-		// Damage
-	case shared.GenerationTagDamageDone:
-		return DamageDoneBlock(input)
+	// 	// Damage
+	// case shared.GenerationTagDamageDone:
+	// 	return DamageDoneBlock(input)
 
-	case shared.GenerationTagAverageDamage:
-		return AvarageDamageBlock(input)
+	// case shared.GenerationTagAverageDamage:
+	// 	return AvarageDamageBlock(input)
 
 	// Accuracy
-	case shared.GenerationTagShotAccuracy:
-		return ShotAccuracyBlock(input)
+	case shared.Accuracy:
+		return ShotAccuracyBlock(layoutName, session, allTime)
 
 	default:
-		return block.Block{}, fmt.Errorf("unknown block type: %s", input.Options.Block.GenerationTag)
+		return shared.InvalidBlock
 	}
 }
