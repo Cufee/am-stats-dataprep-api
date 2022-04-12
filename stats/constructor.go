@@ -4,124 +4,87 @@ import (
 	"fmt"
 
 	"byvko.dev/repo/am-stats-dataprep-api/localization"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/generators"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/shared"
 
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
-	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	api "github.com/byvko-dev/am-types/stats/v1"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 type StatsResponse struct {
-	StatusIcons block.Block `json:"statusIcons" bson:"statusIcons"`
+	// StatusIcons block.Block `json:"statusIcons" bson:"statusIcons"`
 	Cards       block.Block `json:"cards" bson:"cards"`
 	FailedCards []string    `json:"failedCards" bson:"failedCards"`
 	LastBattle  int         `json:"lastBattle" bson:"lastBattle"`
 	Style       string      `json:"style" bson:"style"`
 }
 
-func CompilePlayerStatsCards(stats *api.PlayerRawStats, options settings.Options, styleName string) (StatsResponse, error) {
+func CompilePlayerStatsCards(stats *api.PlayerRawStats, options *logic.LayoutOptions, locale, styleName string) (StatsResponse, error) {
 	if stats == nil {
 		return StatsResponse{}, fmt.Errorf("stats is nil")
 	}
 
 	// Localization
-	_ = localization.InitLocalizer(localization.LocaleStringFromLanguage(options.Locale))
+	localizer := localization.InitLocalizer(localization.LocaleStringFromLanguage(locale))
+	printer := func(s string) string {
+		label, _ := localizer.Localize(&i18n.LocalizeConfig{
+			MessageID: s,
+		})
+		return label
+	}
 
 	var response StatsResponse
 	var cards []block.Block
 
-	// if options.AccountStatus.Include {
-	// 	statusIcons, err := generators.GenerateStatusIcons(stats, options.AccountStatus)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate status icons for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.AccountStatus")
-	// 	} else {
-	// 		statusBlock := block.Block{
-	// 			ContentType: block.ContentTypeBlocks,
-	// 			Content:     statusIcons,
-	// 		}
-	// 		response.StatusIcons = statusBlock
-	// 	}
-	// }
+	if options.PlayerInfo != nil {
+		card := generators.GeneratePlayerCard(options.PlayerInfo, options.LayoutName, stats, printer)
+		if card != nil {
+			cards = append(cards, *card)
+		}
+	}
 
-	// if options.Notifications.Include {
-	// 	notifications, err := generators.GenerateNotificationsCards(stats, options.Notifications)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate notifications for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.Notifications")
-	// 	} else {
-	// 		cards = append(cards, notifications...)
-	// 	}
-	// }
+	if options.RatingOverview != nil && stats.SessionStats.BattlesRating > 0 {
+		overview := generators.GenerateOverviewCard(options.RatingOverview, options.LayoutName, stats, printer)
+		if overview != nil {
+			cards = append(cards, *overview)
+		}
+	}
 
-	// if options.Challenges.Include {
-	// 	challenges, err := generators.GenerateChallengesCards(stats, options.Challenges)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate challenges for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.Challenges")
-	// 	} else {
-	// 		cards = append(cards, challenges...)
-	// 	}
-	// }
+	if options.RandomOverview != nil && stats.SessionStats.BattlesAll > 0 {
+		overview := generators.GenerateOverviewCard(options.RandomOverview, options.LayoutName, stats, printer)
+		if overview != nil {
+			cards = append(cards, *overview)
+		}
+	}
 
-	// if options.Player.Include {
-	// 	playerCard, err := generators.GeneratePlayerCard(stats, options.Player, styleName)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate player card for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.Player")
-	// 	} else {
-	// 		cards = append(cards, playerCard)
-	// 	}
-	// }
+	var slimVehiclesOffset int
+	if options.VehiclesFullOverview != nil && len(stats.SessionStats.Vehicles) > 0 {
+		vehicles := stats.SessionStats.Vehicles
+		if len(vehicles) > options.VehiclesFullOverview.Limit {
+			vehicles = vehicles[:options.VehiclesFullOverview.Limit]
+		}
 
-	// if options.RatingBattles.Include && stats.SessionStats.BattlesRating > 0 {
-	// 	ratingBattles, err := generators.GenerateOverviewCard(stats, options.RatingBattles, localizer, styleName)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate rating battles for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.RatingBattles")
-	// 	} else {
-	// 		cards = append(cards, ratingBattles)
-	// 	}
-	// }
+		vehiclesFull := generators.GenerateVehiclesCards(options.VehiclesFullOverview, options.LayoutName, vehicles, stats.LastSession.Vehicles, printer)
+		cards = append(cards, vehiclesFull...)
+		slimVehiclesOffset = len(vehiclesFull)
+	}
 
-	// if options.RegularBattles.Include && stats.SessionStats.BattlesAll > 0 {
-	// 	regularBattles, err := generators.GenerateOverviewCard(stats, options.RegularBattles, localizer, styleName)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate regular battles for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.RatingBattles")
-	// 	} else {
-	// 		cards = append(cards, regularBattles)
-	// 	}
-	// }
+	if options.VehiclesSlimOverview != nil && len(stats.SessionStats.Vehicles) > slimVehiclesOffset {
+		vehicles := stats.SessionStats.Vehicles[slimVehiclesOffset:]
+		if len(vehicles) > options.VehiclesSlimOverview.Limit {
+			vehicles = vehicles[:options.VehiclesSlimOverview.Limit]
+		}
 
-	// var slimVehiclesOffset int = 0
-	// if options.VehiclesFull.Include && len(stats.SessionStats.Vehicles) > 0 {
-	// 	vehiclesFull, err := generators.GenerateVehiclesCards(stats, options.VehiclesFull, localizer, styleName)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate vehicles full for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.VehiclesFull")
-	// 	} else {
-	// 		cards = append(cards, vehiclesFull...)
-	// 		slimVehiclesOffset = len(vehiclesFull)
-	// 	}
-	// }
+		vehiclesCards := generators.GenerateVehiclesCards(options.VehiclesSlimOverview, options.LayoutName, vehicles, stats.LastSession.Vehicles, printer)
+		cards = append(cards, vehiclesCards...)
+	}
 
-	// if options.VehiclesSlim.Include && len(stats.SessionStats.Vehicles) >= slimVehiclesOffset {
-	// 	options.VehiclesSlim.Offset = slimVehiclesOffset
-	// 	vehiclesSlim, err := generators.GenerateVehiclesCards(stats, options.VehiclesSlim, localizer, styleName)
-	// 	if err != nil {
-	// 		logs.Error("Failed to generate vehicles slim for %v: %v", stats.PlayerDetails.ID, err)
-	// 		response.FailedCards = append(response.FailedCards, "options.VehiclesSlim")
-	// 	} else {
-	// 		cards = append(cards, vehiclesSlim...)
-	// 	}
-	// }
-
-	// bgStyle := styles.LoadBackground(styleName, "wrapper")
 	cardBlock := block.Block{
 		Content:     cards,
 		ContentType: block.ContentTypeBlocks,
-		Style:       shared.AlignVertical.Merge(shared.Gap50),
+		Style:       shared.DefaultFont.Merge(options.WrapperStyle),
 	}
 
 	response.Cards = cardBlock

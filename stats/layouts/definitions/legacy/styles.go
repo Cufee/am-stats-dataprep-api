@@ -1,4 +1,4 @@
-package fallback
+package legacy
 
 import (
 	"image/color"
@@ -10,10 +10,7 @@ var baseFontSize = style.Style{
 	FontSize: 28,
 }
 var baseIconSize = style.Style{
-	FontSize: baseFontSize.FontSize,
-}
-var smallIconSize = style.Style{
-	FontSize: baseFontSize.FontSize * 2.75,
+	FontSize: baseFontSize.FontSize * 0.75,
 }
 var textLarge = style.Style{
 	FontSize: baseFontSize.FontSize * 1.25,

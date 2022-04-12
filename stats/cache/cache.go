@@ -1,31 +1,31 @@
 package cache
 
-import (
-	"time"
+// import (
+// 	"time"
 
-	"byvko.dev/repo/am-stats-dataprep-api/database/stats"
-	"byvko.dev/repo/am-stats-dataprep-api/stats/types"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
+// 	"byvko.dev/repo/am-stats-dataprep-api/database/stats"
 
-type statsCache struct {
-	ID           primitive.ObjectID  `json:"id" firestore:"id" bson:"_id,omitempty"`
-	Data         types.StatsResponse `json:"data" firestore:"data" bson:"data"`
-	CreationTime time.Time           `json:"creationTime" firestore:"creationTime" bson:"creationTime"`
-}
+// 	"go.mongodb.org/mongo-driver/bson/primitive"
+// )
 
-func GetStatsCacheByID(id string) (*types.StatsResponse, error) {
-	var cache statsCache
-	err := stats.GetStatsCacheByID(id, &cache)
-	if err != nil {
-		return nil, err
-	}
-	return &cache.Data, nil
-}
+// type statsCache struct {
+// 	ID           primitive.ObjectID  `json:"id" firestore:"id" bson:"_id,omitempty"`
+// 	Data         types.StatsResponse `json:"data" firestore:"data" bson:"data"`
+// 	CreationTime time.Time           `json:"creationTime" firestore:"creationTime" bson:"creationTime"`
+// }
 
-func CreateStatsCache(data types.StatsResponse) (string, error) {
-	var cache statsCache
-	cache.Data = data
-	cache.CreationTime = time.Now()
-	return stats.CreateNewStatsCache(cache)
-}
+// func GetStatsCacheByID(id string) (*types.StatsResponse, error) {
+// 	var cache statsCache
+// 	err := stats.GetStatsCacheByID(id, &cache)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &cache.Data, nil
+// }
+
+// func CreateStatsCache(data types.StatsResponse) (string, error) {
+// 	var cache statsCache
+// 	cache.Data = data
+// 	cache.CreationTime = time.Now()
+// 	return stats.CreateNewStatsCache(cache)
+// }

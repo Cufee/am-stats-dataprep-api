@@ -1,12 +1,12 @@
 package shared
 
-type LayoutKind string
+type DataType string
 
 const (
-	WN8                LayoutKind = "wn8"
-	Battles            LayoutKind = "battles"
-	Winrate            LayoutKind = "winrate"
-	Accuracy           LayoutKind = "accuracy"
-	AvgDamage          LayoutKind = "avgDamage"
-	WinrateWithBattles LayoutKind = "winrateWithBattles"
+	WN8                DataType = "wn8"
+	Battles            DataType = "battles"
+	Winrate            DataType = "winrate"
+	Accuracy           DataType = "accuracy"
+	AvgDamage          DataType = "avgDamage"
+	WinrateWithBattles DataType = "winrateWithBattles"
 )

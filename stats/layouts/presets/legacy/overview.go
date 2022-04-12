@@ -1,4 +1,4 @@
-package fallback
+package legacy
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"

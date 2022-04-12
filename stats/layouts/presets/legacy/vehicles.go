@@ -1,4 +1,4 @@
-package fallback
+package legacy
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/definitions/fallback"
@@ -22,7 +22,6 @@ var VehiclesSlim = logic.CardLayout{
 	Blocks: []logic.Definition{
 		fallback.AvgDamage,
 		fallback.WinrateWithBattles,
-		fallback.Accuracy,
 		fallback.WN8,
 	},
 	Limit:        3,

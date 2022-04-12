@@ -17,3 +17,11 @@ var Gap50 = style.Style{
 var Gap25 = style.Style{
 	Gap: 0.25,
 }
+
+var Gap15 = style.Style{
+	Gap: 0.15,
+}
+
+var Gap10 = style.Style{
+	Gap: 0.1,
+}

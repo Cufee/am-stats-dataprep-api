@@ -1,4 +1,4 @@
-package fallback
+package legacy
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/definitions/fallback"
@@ -9,6 +9,5 @@ var blocksDefault = []logic.Definition{
 	fallback.BattlesDetailed,
 	fallback.AvgDamageDetailed,
 	fallback.WinrateDetailed,
-	fallback.AccuracyDetailed,
 	fallback.WN8Detailed,
 }

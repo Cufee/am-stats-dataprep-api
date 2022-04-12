@@ -15,39 +15,47 @@ const (
 )
 
 type LayoutItem struct {
-	Type  ItemType    `json:"type"`
-	Data  interface{} `json:"data"`
-	Style style.Style `json:"style"`
+	Type         ItemType          `json:"type"`
+	Data         interface{}       `json:"data"`
+	Style        style.Style       `json:"style"`
+	AddCondition func(Values) bool `json:"-"`
 }
 
-func (item *LayoutItem) ToBlock(values Values, stl style.Style) block.Block {
+func (item *LayoutItem) ToBlock(values Values, stl style.Style, printer func(string) string) *block.Block {
+	if item.AddCondition != nil && !item.AddCondition(values) {
+		return nil
+	}
 	var b block.Block
 	switch item.Type {
 	case ItemTypeIcon:
-		item, ok := item.Data.(Icon)
+		data, ok := item.Data.(Icon)
 		if !ok {
-			return shared.InvalidBlock
+			return nil
 		}
-		b.Style = stl.Merge(item.GetStyle(values))
-		b.Content = item.GetName(values)
+		b.Content = block.Block{
+			Content: data.GetName(values),
+			Style:   data.GetStyle(values),
+		}
 		b.ContentType = block.ContentTypeIcon
+		b.Style = shared.DefaultFont.Merge(stl).Merge(item.Style)
 	case ItemTypeTemplate:
-		item, ok := item.Data.(Template)
+		data, ok := item.Data.(Template)
 		if !ok {
-			return shared.InvalidBlock
+			return nil
 		}
-		b.Style = stl
-		b.Content = item.Evaluate(values)
+		b.Content = data.Evaluate(values)
 		b.ContentType = block.ContentTypeText
+		b.Style = shared.DefaultFont.Merge(stl).Merge(item.Style)
 	case ItemTypeText:
 		text, ok := item.Data.(Text)
+		text.Printer = printer
 		if !ok {
-			return shared.InvalidBlock
+			return nil
 		}
-		text.Style = stl.Merge(text.Style)
-		return text.ToBlock()
+		text.Style = shared.DefaultFont.Merge(stl).Merge(text.Style)
+		b = text.ToBlock(values)
 	default:
-		return shared.InvalidBlock
+		return nil
 	}
-	return b
+	return &b
 }

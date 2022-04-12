@@ -8,7 +8,7 @@ import (
 	"github.com/byvko-dev/am-types/dataprep/style/v1"
 )
 
-func accuracy(allTime, label bool) *logic.Layout {
+func avgDamage(allTime, label bool) *logic.Layout {
 	var layout logic.Layout
 	layout.Style = shared.AlignVertical
 	// Session
@@ -16,6 +16,7 @@ func accuracy(allTime, label bool) *logic.Layout {
 		Style: textLarge.Merge(shared.Gap10).Merge(textLargeColor),
 		Items: []logic.LayoutItem{
 			{
+				Style:        baseIconSize,
 				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeIcon,
 				Data: logic.Icon{
@@ -27,12 +28,13 @@ func accuracy(allTime, label bool) *logic.Layout {
 				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeTemplate,
 				Data: logic.Template{
-					Expression: fmt.Sprintf("(%v / %v) * 100", logic.SessionValue, logic.SessionOf),
-					Format:     "%v%%",
-					Parse:      shared.RoundFloat,
+					Expression: fmt.Sprintf("(%v / %v)", logic.SessionValue, logic.SessionOf),
+					Format:     "%v",
+					Parse:      shared.FloatToInt,
 				},
 			},
 			{ // Invisible icon to center things
+				Style:        baseIconSize,
 				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeIcon,
 				Data: logic.Icon{
@@ -51,9 +53,9 @@ func accuracy(allTime, label bool) *logic.Layout {
 					AddCondition: logic.AllTimeOfOverZero,
 					Type:         logic.ItemTypeTemplate,
 					Data: logic.Template{
-						Expression: fmt.Sprintf("(%v / %v) * 100", logic.AllTimeValue, logic.AllTimeOf),
-						Format:     "%v%%",
-						Parse:      shared.RoundFloat,
+						Expression: fmt.Sprintf("(%v / %v)", logic.AllTimeValue, logic.AllTimeOf),
+						Format:     "%v",
+						Parse:      shared.FloatToInt,
 					},
 				},
 			},
@@ -73,7 +75,7 @@ func accuracy(allTime, label bool) *logic.Layout {
 					Type:  logic.ItemTypeText,
 					Data: logic.Text{
 						Localize: true,
-						String:   "localized_shot_accuracy",
+						String:   "localized_average_damage",
 					},
 				},
 			},

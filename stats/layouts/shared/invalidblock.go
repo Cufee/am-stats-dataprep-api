@@ -9,8 +9,9 @@ import (
 
 var InvalidBlock = block.Block{
 	ContentType: block.ContentTypeText,
-	Content:     "invalid block",
+	Content:     "invalid\nblock",
 	Style: style.Style{
-		Color: color.RGBA{R: 255, G: 0, B: 0, A: 255},
+		Color:    color.RGBA{R: 255, G: 0, B: 0, A: 255},
+		FontSize: 28,
 	},
 }

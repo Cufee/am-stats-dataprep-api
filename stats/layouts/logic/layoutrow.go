@@ -10,14 +10,20 @@ type LayoutRow struct {
 	Items []LayoutItem `json:"items"`
 }
 
-func (row *LayoutRow) ToBlock(lt Layout) block.Block {
+func (row *LayoutRow) ToBlock(lt Layout, printer func(string) string) *block.Block {
 	blocks := make([]block.Block, 0, len(row.Items))
 	for _, item := range row.Items {
-		blocks = append(blocks, item.ToBlock(lt.Values, lt.Style.Merge(row.Style)))
+		b := item.ToBlock(lt.Values, lt.Style.Merge(row.Style), printer)
+		if b != nil {
+			blocks = append(blocks, *b)
+		}
 	}
-	return block.Block{
+	if len(blocks) == 0 {
+		return nil
+	}
+	return &block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     blocks,
-		Style:       lt.Style,
+		Style:       row.Style,
 	}
 }

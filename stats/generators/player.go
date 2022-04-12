@@ -1,45 +1,60 @@
 package generators
 
-// func GeneratePlayerCard(stats *api.PlayerRawStats, options settings.PlayerOptions, styleName string) (block.Block, error) {
-// 	if !options.WithClanTag && !options.WithName && !options.WithPins {
-// 		return block.Block{}, fmt.Errorf("no options provided")
-// 	}
+import (
+	"fmt"
 
-// 	var contentElements []block.Block
-// 	if options.WithName {
-// 		// Player name
-// 		contentElements = append(contentElements, block.Block{
-// 			Style:       styles.LoadWithTags(styleName, utils.TagPlayerName),
-// 			ContentType: block.ContentTypeText,
-// 			Content:     stats.PlayerDetails.Name,
-// 		})
-// 	}
+	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
+	str "github.com/byvko-dev/am-core/helpers/strings"
+	"github.com/byvko-dev/am-types/dataprep/block/v1"
+	"github.com/byvko-dev/am-types/stats/v1"
+)
 
-// 	// Clan tag if it exists
-// 	if options.WithClanTag && stats.PlayerDetails.ClanTag != "" {
-// 		contentElements = append(contentElements, block.Block{
-// 			Style:       styles.LoadWithTags(styleName, utils.TagPlayerClan),
-// 			ContentType: block.ContentTypeText,
-// 			Content:     fmt.Sprintf("[%s]", stats.PlayerDetails.ClanTag),
-// 		})
-// 	}
+func GeneratePlayerCard(layout *logic.CardLayout, layoutName string, data *stats.PlayerRawStats, printer func(string) string) *block.Block {
+	var card block.Block
+	card.Style = layout.CardStyle
+	card.ContentType = block.ContentTypeBlocks
 
-// 	if options.WithPins {
-// 		logs.Warning("GeneratePlayerCard: pins not implemented yet")
-// 	}
+	var blocks []block.Block
+	for _, definition := range layout.Blocks {
+		switch definition.ValueKind {
+		case logic.PlayerName:
+			layout := layouts.LoadDefinition(layoutName, definition)
+			values := make(logic.Values)
+			values[logic.String] = str.Or(data.PlayerDetails.Name, "Unknown Player")
+			layout.Values = values
+			b := layout.ToBlock(printer)
+			if b != nil {
+				blocks = append(blocks, *b)
+			}
 
-// 	fullName := []block.Block{{
-// 		ContentType: block.ContentTypeBlocks,
-// 		Content:     contentElements,
-// 		Style:       styles.LoadWithTags(styleName, "playerName"),
-// 	}}
+		case logic.PlayerClanTag:
+			if data.PlayerDetails.ClanTag == "" {
+				continue
+			}
+			layout := layouts.LoadDefinition(layoutName, definition)
+			values := make(logic.Values)
+			values[logic.String] = fmt.Sprintf("[%v]", data.PlayerDetails.ClanTag)
+			layout.Values = values
+			b := layout.ToBlock(printer)
+			if b != nil {
+				blocks = append(blocks, *b)
+			}
+		default:
+			continue
+		}
+	}
+	if len(blocks) == 0 {
+		return nil
+	}
 
-// 	return block.Block{
-// 		Style:       styles.LoadWithTags(styleName, "card"),
-// 		ContentType: block.ContentTypeBlocks,
-// 		Content: []block.Block{{
-// 			ContentType: block.ContentTypeBlocks,
-// 			Content:     fullName,
-// 			Style:       shared.AlignVertical.Merge(styles.LoadWithTags(styleName, "playerNameContainer")),
-// 		}}}, nil
-// }
+	nameBlock := block.Block{
+		ContentType: block.ContentTypeBlocks,
+		Content:     blocks,
+		Style:       layout.ContentStyle,
+	}
+
+	card.Content = []block.Block{nameBlock}
+	return &card
+
+}

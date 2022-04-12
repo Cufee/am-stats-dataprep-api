@@ -4,14 +4,13 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/definitions/fallback"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/definitions/legacy"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
-	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/shared"
 )
 
-func Load(name string, kind shared.LayoutKind) *logic.Layout {
-	switch name {
+func LoadDefinition(layoutName string, definition logic.Definition) *logic.Layout {
+	switch layoutName {
 	case "legacy":
-		return legacy.Loader(kind)
+		return legacy.Loader(definition)
 	default:
-		return fallback.Loader(kind)
+		return fallback.Loader(definition)
 	}
 }

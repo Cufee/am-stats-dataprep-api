@@ -13,12 +13,18 @@ type Layout struct {
 	Values Values      `json:"values"`
 }
 
-func (lt *Layout) ToBlock() block.Block {
+func (lt *Layout) ToBlock(printer func(string) string) *block.Block {
 	blocks := make([]block.Block, 0, len(lt.Rows))
 	for _, row := range lt.Rows {
-		blocks = append(blocks, row.ToBlock(*lt))
+		b := row.ToBlock(*lt, printer)
+		if b != nil {
+			blocks = append(blocks, *b)
+		}
 	}
-	return block.Block{
+	if len(blocks) == 0 {
+		return nil
+	}
+	return &block.Block{
 		ContentType: block.ContentTypeBlocks,
 		Content:     blocks,
 		Style:       lt.Style,
