@@ -13,7 +13,7 @@ func winrate(allTime, label bool) *logic.Layout {
 	layout.Style = shared.AlignVertical
 	// Session
 	layout.Rows = append(layout.Rows, logic.LayoutRow{
-		Style: textLarge.Merge(shared.Gap10).Merge(textLargeColor),
+		Style: textLarge.Merge(shared.Gap25).Merge(textLargeColor),
 		Items: []logic.LayoutItem{
 			{
 				Style: smallIconSize,
@@ -85,7 +85,7 @@ func winrateWithBattles(allTime, label bool) *logic.Layout {
 	layout.Style = shared.AlignVertical.Merge(shared.JustifyCenter)
 	// Session
 	layout.Rows = append(layout.Rows, logic.LayoutRow{
-		Style: textLarge.Merge(shared.Gap10).Merge(textLargeColor),
+		Style: textLarge.Merge(shared.Gap25).Merge(textLargeColor),
 		Items: []logic.LayoutItem{
 			{
 				Style: smallIconSize,

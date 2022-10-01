@@ -7,9 +7,12 @@ import (
 var (
 	IconDirectionUpSmall   = "upSmall"
 	IconDirectionUpLarge   = "upLarge"
+	IconDirectionUpThick   = "upThick"
 	IconDirectionDownSmall = "downSmall"
 	IconDirectionDownLarge = "downLarge"
-	IconSizeVariations     = []string{IconDirectionUpSmall, IconDirectionUpLarge, IconDirectionDownSmall, IconDirectionDownLarge}
+	IconDirectionDownThick = "downThick"
+
+	IconSizeVariations = []string{IconDirectionUpSmall, IconDirectionUpLarge, IconDirectionDownSmall, IconDirectionDownLarge}
 
 	IconDirectionHorizontal = "horizontal"
 	IconDirectionVertical   = "vertical"
@@ -25,6 +28,8 @@ func init() {
 	IconsArrows[IconDirectionUpLarge] = "doubleArrowUp"
 	IconsArrows[IconDirectionDownLarge] = "doubleArrowDown"
 	IconsArrows[IconDirectionDownSmall] = "singleArrowDown"
+	IconsArrows[IconDirectionUpThick] = "thickArrowUp"
+	IconsArrows[IconDirectionDownThick] = "thickArrowDown"
 
 	IconsLines[IconDirectionVertical] = "lineVertical"
 	IconsLines[IconDirectionHorizontal] = "lineHorizontal"

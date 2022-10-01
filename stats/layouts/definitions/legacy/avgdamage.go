@@ -13,7 +13,7 @@ func avgDamage(allTime, label bool) *logic.Layout {
 	layout.Style = shared.AlignVertical.Merge(shared.JustifyCenter)
 	// Session
 	layout.Rows = append(layout.Rows, logic.LayoutRow{
-		Style: textLarge.Merge(shared.Gap10).Merge(textLargeColor),
+		Style: textLarge.Merge(shared.Gap25).Merge(textLargeColor),
 		Items: []logic.LayoutItem{
 			{
 				Style:        baseIconSize,

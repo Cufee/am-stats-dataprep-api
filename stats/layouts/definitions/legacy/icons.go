@@ -26,10 +26,10 @@ func percentageIconStyleAndName(values logic.Values) (style.Style, string) {
 
 	if result == "true" {
 		iconStyle.Color = shared.ColorGreen
-		name = shared.IconsArrows[shared.IconDirectionUpSmall]
+		name = shared.IconsArrows[shared.IconDirectionUpThick]
 	} else {
 		iconStyle.Color = shared.ColorRed
-		name = shared.IconsArrows[shared.IconDirectionDownSmall]
+		name = shared.IconsArrows[shared.IconDirectionDownThick]
 	}
 
 	return iconStyle, name
