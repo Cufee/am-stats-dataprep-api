@@ -31,14 +31,15 @@ func Init() {
 		panic(err)
 	}
 
+	img = helpers.BlurImage(img, 30)
+
 	buf := new(bytes.Buffer)
 	err = png.Encode(buf, img)
 	if err != nil {
 		panic(err)
 	}
 
-	wrapperStyle.BackgroundImage = []byte(base64.StdEncoding.EncodeToString(buf.Bytes()))
-	wrapperStyle.BackgroundImageBlur = 30
+	wrapperStyle.BackgroundImage = base64.StdEncoding.EncodeToString(buf.Bytes())
 
 	Preset = logic.LayoutOptions{
 		WrapperStyle:         shared.AlignVertical.Merge(wrapperStyle),

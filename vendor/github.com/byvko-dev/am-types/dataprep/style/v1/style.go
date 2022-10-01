@@ -22,7 +22,7 @@ const (
 type Style struct {
 	Color               color.RGBA `json:"color" bson:"color"`
 	BackgroundColor     color.RGBA `json:"backgroundColor" bson:"backgroundColor"`
-	BackgroundImage     []byte     `json:"backgroundImage" bson:"backgroundImage"`
+	BackgroundImage     string     `json:"backgroundImage" bson:"backgroundImage"`
 	BackgroundImageBlur float64    `json:"backgroundImageBlur" bson:"backgroundImageBlur"`
 	Invisible           bool       `json:"invisible" bson:"invisible"`
 

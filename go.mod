@@ -9,7 +9,8 @@ replace github.com/byvko-dev/am-core => ../am-core
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/byvko-dev/am-core v1.2.9
-	github.com/byvko-dev/am-types v1.4.1
+	github.com/byvko-dev/am-types v1.5.6
+	github.com/disintegration/imaging v1.6.2
 	github.com/fogleman/gg v1.3.0
 	github.com/gofiber/fiber/v2 v2.31.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
