@@ -32,9 +32,10 @@ func (item *LayoutItem) ToBlock(values Values, stl style.Style, printer func(str
 		if !ok {
 			return nil
 		}
+		iconStyle := data.GetStyle(values)
 		b.Content = block.Block{
 			Content: data.GetName(values),
-			Style:   data.GetStyle(values),
+			Style:   iconStyle,
 		}
 		b.ContentType = block.ContentTypeIcon
 		b.Style = shared.DefaultFont.Merge(stl).Merge(item.Style)

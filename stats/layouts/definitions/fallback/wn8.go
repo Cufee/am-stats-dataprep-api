@@ -10,7 +10,7 @@ import (
 
 func wn8(allTime, label bool) *logic.Layout {
 	var layout logic.Layout
-	layout.Style = shared.AlignVertical
+	layout.Style = shared.AlignVertical.Merge(shared.JustifyCenter)
 	// Session
 	layout.Rows = append(layout.Rows, logic.LayoutRow{
 		Style: textLarge.Merge(shared.Gap15).Merge(textLargeColor),

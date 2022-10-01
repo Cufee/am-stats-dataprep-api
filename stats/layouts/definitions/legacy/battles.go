@@ -1,4 +1,4 @@
-package fallback
+package legacy
 
 import (
 	"fmt"

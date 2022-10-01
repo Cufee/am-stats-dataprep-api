@@ -10,7 +10,7 @@ import (
 
 func avgDamage(allTime, label bool) *logic.Layout {
 	var layout logic.Layout
-	layout.Style = shared.AlignVertical
+	layout.Style = shared.AlignVertical.Merge(shared.JustifyCenter)
 	// Session
 	layout.Rows = append(layout.Rows, logic.LayoutRow{
 		Style: textLarge.Merge(shared.Gap10).Merge(textLargeColor),
@@ -38,7 +38,7 @@ func avgDamage(allTime, label bool) *logic.Layout {
 				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeIcon,
 				Data: logic.Icon{
-					GetStyle: func(values logic.Values) style.Style { return baseIconSize },
+					GetStyle: func(values logic.Values) style.Style { return smallIconSize },
 					GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
 				},
 			},

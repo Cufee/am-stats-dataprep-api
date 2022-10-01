@@ -13,7 +13,7 @@ var baseIconSize = style.Style{
 	FontSize: baseFontSize.FontSize,
 }
 var smallIconSize = style.Style{
-	FontSize: baseFontSize.FontSize * 2.75,
+	FontSize: baseFontSize.FontSize * 0.6,
 }
 var textLarge = style.Style{
 	FontSize: baseFontSize.FontSize * 1.25,
@@ -31,5 +31,5 @@ var textSmall = style.Style{
 	FontSize: baseFontSize.FontSize * 0.75,
 }
 var textSmallColor = style.Style{
-	Color: color.RGBA{100, 100, 100, 255},
+	Color: color.RGBA{130, 130, 130, 255},
 }

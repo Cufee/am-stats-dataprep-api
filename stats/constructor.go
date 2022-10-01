@@ -46,14 +46,14 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options *logic.LayoutOpt
 	}
 
 	if options.RatingOverview != nil && stats.SessionStats.BattlesRating > 0 {
-		overview := generators.GenerateOverviewCard(options.RatingOverview, options.LayoutName, stats, printer)
+		overview := generators.GenerateRatingOverviewCard(options.RatingOverview, options.LayoutName, stats, printer)
 		if overview != nil {
 			cards = append(cards, *overview)
 		}
 	}
 
 	if options.RandomOverview != nil && stats.SessionStats.BattlesAll > 0 {
-		overview := generators.GenerateOverviewCard(options.RandomOverview, options.LayoutName, stats, printer)
+		overview := generators.GenerateRandomOverviewCard(options.RandomOverview, options.LayoutName, stats, printer)
 		if overview != nil {
 			cards = append(cards, *overview)
 		}

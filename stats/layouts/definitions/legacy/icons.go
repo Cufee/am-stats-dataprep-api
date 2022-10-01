@@ -1,12 +1,39 @@
 package legacy
 
 import (
+	"fmt"
 	"image/color"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/shared"
 	"github.com/byvko-dev/am-types/dataprep/style/v1"
 )
+
+func percentageIconStyleAndName(values logic.Values) (style.Style, string) {
+	var iconStyle style.Style = smallIconSize
+	var name string
+
+	// Make icon invisible if there is no data
+	if val, ok := values[logic.SessionOf].(float64); !ok || val <= 0 {
+		return iconStyle, name
+	}
+
+	iconStyle.Color = shared.ColorNeutral // Start with neutral as baseline
+	result, err := logic.EvaluateExpression(fmt.Sprintf("(%v/%v) < (%v/%v)", logic.AllTimeValue, logic.AllTimeOf, logic.SessionValue, logic.SessionOf), values)
+	if val, ok := values[logic.AllTimeOf].(float64); !ok || val <= 0 || err != nil {
+		return iconStyle, name
+	}
+
+	if result == "true" {
+		iconStyle.Color = shared.ColorGreen
+		name = shared.IconsArrows[shared.IconDirectionUpSmall]
+	} else {
+		iconStyle.Color = shared.ColorRed
+		name = shared.IconsArrows[shared.IconDirectionDownSmall]
+	}
+
+	return iconStyle, name
+}
 
 func wn8IconStyleAndName(values logic.Values) (style.Style, string) {
 	var iconStyle style.Style = baseIconSize

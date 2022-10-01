@@ -9,17 +9,24 @@ import (
 )
 
 var cardStyle = style.Style{
-	PaddingLeft:     1,
-	PaddingRight:    1,
+	PaddingLeft:     1.5,
+	PaddingRight:    1.5,
 	PaddingTop:      0.5,
 	PaddingBottom:   0.5,
 	BackgroundColor: color.RGBA{30, 30, 30, 204},
 	BorderRadius:    30,
 }.Merge(shared.DefaultFont).Merge(shared.AlignVertical).Merge(shared.GrowX)
-var contentStyle = style.Style{
-	PaddingLeft:   0.75,
-	PaddingBottom: 0.5,
-	Gap:           2,
-}.Merge(shared.DefaultFont).Merge(shared.GrowX)
 
+var contentBase = style.Style{
+	PaddingLeft:   1,
+	PaddingBottom: 0.5,
+	PaddingRight:  -0.5,
+}.Merge(shared.DefaultFont)
+
+var vehicleSlimContentStyle = style.Style{
+	Width: 500,
+}.Merge(contentBase)
+
+var contentStyle = contentBase.Merge(shared.GrowX).Merge(shared.Gap100)
 var overviewTextStyle = fallback.TextMedium.Merge(fallback.TextMediumColor)
+var vehicleSlimCardStyle = cardStyle.Merge(style.Style{AlignItems: style.AlignItemsHorizontal})

@@ -17,9 +17,10 @@ var cardStyle = style.Style{
 	BorderRadius:    25,
 }.Merge(shared.DefaultFont).Merge(shared.AlignVertical).Merge(shared.GrowX)
 var contentStyle = style.Style{
-	PaddingLeft:   1,
-	PaddingRight:  0.5,
-	PaddingBottom: 0.5,
+	PaddingLeft:    1,
+	PaddingRight:   0.5,
+	PaddingBottom:  0.5,
+	JustifyContent: style.JustifyContentSpaceBetween,
 }.Merge(shared.DefaultFont).Merge(shared.Gap50).Merge(shared.GrowX)
 
 var overviewTextStyle = fallback.TextMedium.Merge(fallback.TextMediumColor)

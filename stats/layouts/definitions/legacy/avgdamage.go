@@ -8,37 +8,38 @@ import (
 	"github.com/byvko-dev/am-types/dataprep/style/v1"
 )
 
-func wn8(allTime, label bool) *logic.Layout {
+func avgDamage(allTime, label bool) *logic.Layout {
 	var layout logic.Layout
 	layout.Style = shared.AlignVertical.Merge(shared.JustifyCenter)
 	// Session
 	layout.Rows = append(layout.Rows, logic.LayoutRow{
-		Style: textLarge.Merge(shared.Gap15).Merge(textLargeColor),
+		Style: textLarge.Merge(shared.Gap10).Merge(textLargeColor),
 		Items: []logic.LayoutItem{
 			{
-				AddCondition: logic.SessionValueOverNegOne,
 				Style:        baseIconSize,
+				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeIcon,
 				Data: logic.Icon{
-					GetStyle: func(values logic.Values) style.Style { style, _ := wn8IconStyleAndName(values); return style },
-					GetName:  func(values logic.Values) string { _, name := wn8IconStyleAndName(values); return name },
+					GetStyle: func(values logic.Values) style.Style { style, _ := percentageIconStyleAndName(values); return style },
+					GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
 				},
 			},
 			{
-				AddCondition: logic.SessionValueOverNegOne,
+				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeTemplate,
 				Data: logic.Template{
-					Expression: fmt.Sprintf("%v", logic.SessionValue),
+					Expression: fmt.Sprintf("(%v / %v)", logic.SessionValue, logic.SessionOf),
 					Format:     "%v",
+					Parse:      shared.FloatToInt,
 				},
 			},
 			{ // Invisible icon to center things
-				AddCondition: logic.SessionValueOverNegOne,
 				Style:        baseIconSize,
+				AddCondition: logic.SessionOfOverZero,
 				Type:         logic.ItemTypeIcon,
 				Data: logic.Icon{
-					GetStyle: func(values logic.Values) style.Style { return baseIconSize },
-					GetName:  func(values logic.Values) string { _, name := wn8IconStyleAndName(values); return name },
+					GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+					GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
 				},
 			},
 		},
@@ -49,15 +50,17 @@ func wn8(allTime, label bool) *logic.Layout {
 			Style: TextMedium.Merge(TextMediumColor),
 			Items: []logic.LayoutItem{
 				{
-					AddCondition: logic.AllTimeValueOverNegOne,
+					AddCondition: logic.AllTimeOfOverZero,
 					Type:         logic.ItemTypeTemplate,
 					Data: logic.Template{
-						Expression: fmt.Sprintf("%v", logic.AllTimeValue),
+						Expression: fmt.Sprintf("(%v / %v)", logic.AllTimeValue, logic.AllTimeOf),
 						Format:     "%v",
+						Parse:      shared.FloatToInt,
 					},
 				},
 			},
-		})
+		},
+		)
 	}
 	// Label
 	if label {
@@ -65,16 +68,20 @@ func wn8(allTime, label bool) *logic.Layout {
 			Style: textSmall.Merge(textSmallColor),
 			Items: []logic.LayoutItem{
 				{
-					AddCondition: func(v logic.Values) bool { return logic.AllTimeValueOverNegOne(v) || logic.SessionValueOverNegOne(v) },
-					Style:        textSmall,
-					Type:         logic.ItemTypeText,
+					AddCondition: func(v logic.Values) bool {
+						return (allTime && logic.AllTimeOfOverZero(v)) || logic.SessionOfOverZero(v)
+					},
+					Style: textSmall,
+					Type:  logic.ItemTypeText,
 					Data: logic.Text{
 						Localize: true,
-						String:   "localized_wn8_rating",
+						String:   "localized_average_damage",
 					},
 				},
 			},
-		})
+		},
+		)
 	}
+
 	return &layout
 }

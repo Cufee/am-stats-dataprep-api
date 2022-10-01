@@ -9,5 +9,6 @@ var blocksDefault = []logic.Definition{
 	fallback.BattlesDetailed,
 	fallback.AvgDamageDetailed,
 	fallback.WinrateDetailed,
+	fallback.AccuracyDetailed,
 	fallback.WN8Detailed,
 }
