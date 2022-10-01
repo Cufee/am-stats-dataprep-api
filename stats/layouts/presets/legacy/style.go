@@ -24,9 +24,10 @@ var contentBase = style.Style{
 }.Merge(shared.DefaultFont)
 
 var vehicleSlimContentStyle = style.Style{
-	Width: 500,
+	MinWidth:       500,
+	JustifyContent: style.JustifyContentSpaceBetween,
 }.Merge(contentBase)
 
 var contentStyle = contentBase.Merge(shared.GrowX).Merge(shared.Gap100)
 var overviewTextStyle = fallback.TextMedium.Merge(fallback.TextMediumColor)
-var vehicleSlimCardStyle = cardStyle.Merge(style.Style{AlignItems: style.AlignItemsHorizontal})
+var vehicleSlimCardStyle = cardStyle.Merge(style.Style{AlignItems: style.AlignItemsHorizontal, JustifyContent: style.JustifyContentSpaceBetween})
