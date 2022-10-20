@@ -4,14 +4,15 @@ import (
 	"fmt"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
+	"github.com/byvko-dev/am-core/stats/ratings/wn8/v1"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
-	"github.com/byvko-dev/am-types/stats/v1"
+	"github.com/byvko-dev/am-types/stats/v3"
 )
 
-func GenerateVehiclesCards(layout *logic.CardLayout, layoutName string, session []stats.VehicleStats, allTime map[string]stats.VehicleStats, printer func(string) string) []block.Block {
+func GenerateVehiclesCards(layout *logic.CardLayout, layoutName string, session []stats.VehicleStats, allTime map[int]stats.VehicleStats, printer func(string) string) []block.Block {
 	cards := make([]block.Block, 0, len(session))
 	for _, vehicle := range session {
-		allTimeVehicle := allTime[fmt.Sprint(vehicle.TankID)]
+		allTimeVehicle := allTime[vehicle.TankID]
 		card := generateSingleVehicleCard(layout, layoutName, vehicle, allTimeVehicle, printer)
 		if card != nil {
 			cards = append(cards, *card)
@@ -36,12 +37,12 @@ func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, sess
 	for _, definition := range layout.Blocks {
 		switch definition.ValueKind {
 		case logic.WN8OverOne:
-			b := WN8BlockFromStats(layoutName, definition, session.TankWN8, -1, printer)
+			b := WN8BlockFromStats(layoutName, definition, session.Ratings[wn8.WN8], -1, printer)
 			if b != nil {
 				content = append(content, *b)
 			}
 		default:
-			b := BlockFromStats(layoutName, definition, session.StatsFrame, allTime.StatsFrame, printer)
+			b := BlockFromStats(layoutName, definition, session.Stats, allTime.Stats, printer)
 			if b != nil {
 				content = append(content, *b)
 			}

@@ -4,7 +4,7 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
-	"github.com/byvko-dev/am-types/wargaming/v1/statistics"
+	"github.com/byvko-dev/am-types/wargaming/v2/statistics"
 )
 
 func BlockFromStats(layoutName string, definition logic.Definition, session, allTime statistics.StatsFrame, printer func(string) string) *block.Block {

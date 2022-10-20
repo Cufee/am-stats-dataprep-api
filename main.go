@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	database "byvko.dev/repo/am-stats-dataprep-api/database/init"
 	"byvko.dev/repo/am-stats-dataprep-api/handlers/settings"
 	"byvko.dev/repo/am-stats-dataprep-api/handlers/stats"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/presets"
@@ -35,9 +34,6 @@ func main() {
 	// settingsV1.Get("/:id/cache", stats.CacheStatsFromSettings)
 	settingsV1.Post("/:id", settings.UpdateSettingsByID)
 	settingsV1.Put("/", settings.CreateNewSettings)
-
-	// Other init logic
-	go database.Init()
 
 	panic(app.Listen(fmt.Sprintf(":%v", os.Getenv("PORT"))))
 }

@@ -8,8 +8,9 @@ import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/shared"
 
+	api "github.com/byvko-dev/am-types/api/stats/v1"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
-	api "github.com/byvko-dev/am-types/stats/v1"
+	types "github.com/byvko-dev/am-types/stats/v3"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -21,7 +22,7 @@ type StatsResponse struct {
 	Style       string      `json:"style" bson:"style"`
 }
 
-func CompilePlayerStatsCards(stats *api.PlayerRawStats, options *logic.LayoutOptions, locale, styleName string) (StatsResponse, error) {
+func CompilePlayerStatsCards(stats *api.ResponsePayload, options *logic.LayoutOptions, locale, styleName string) (StatsResponse, error) {
 	if stats == nil {
 		return StatsResponse{}, fmt.Errorf("stats is nil")
 	}
@@ -45,39 +46,43 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options *logic.LayoutOpt
 		}
 	}
 
-	if options.RatingOverview != nil && stats.SessionStats.BattlesRating > 0 {
+	if options.RatingOverview != nil && stats.Session.Rating.Total.Battles > 0 {
 		overview := generators.GenerateRatingOverviewCard(options.RatingOverview, options.LayoutName, stats, printer)
 		if overview != nil {
 			cards = append(cards, *overview)
 		}
 	}
 
-	if options.RandomOverview != nil && stats.SessionStats.BattlesAll > 0 {
+	if options.RandomOverview != nil && stats.Session.Regular.Total.Battles > 0 {
 		overview := generators.GenerateRandomOverviewCard(options.RandomOverview, options.LayoutName, stats, printer)
 		if overview != nil {
 			cards = append(cards, *overview)
 		}
 	}
 
+	var allVehicles []types.VehicleStats
+	for _, v := range stats.Session.Regular.Vehicles {
+		allVehicles = append(allVehicles, v)
+	}
 	var slimVehiclesOffset int
-	if options.VehiclesFullOverview != nil && len(stats.SessionStats.Vehicles) > 0 {
-		vehicles := stats.SessionStats.Vehicles
+	if options.VehiclesFullOverview != nil && len(stats.Session.Regular.Vehicles) > 0 {
+		vehicles := allVehicles
 		if len(vehicles) > options.VehiclesFullOverview.Limit {
 			vehicles = vehicles[:options.VehiclesFullOverview.Limit]
 		}
 
-		vehiclesFull := generators.GenerateVehiclesCards(options.VehiclesFullOverview, options.LayoutName, vehicles, stats.LastSession.Vehicles, printer)
+		vehiclesFull := generators.GenerateVehiclesCards(options.VehiclesFullOverview, options.LayoutName, vehicles, stats.Snapshot.Regular.Vehicles, printer)
 		cards = append(cards, vehiclesFull...)
 		slimVehiclesOffset = len(vehiclesFull)
 	}
 
-	if options.VehiclesSlimOverview != nil && len(stats.SessionStats.Vehicles) > slimVehiclesOffset {
-		vehicles := stats.SessionStats.Vehicles[slimVehiclesOffset:]
+	if options.VehiclesSlimOverview != nil && len(stats.Session.Regular.Vehicles) > slimVehiclesOffset {
+		vehicles := allVehicles[slimVehiclesOffset:]
 		if len(vehicles) > options.VehiclesSlimOverview.Limit {
 			vehicles = vehicles[:options.VehiclesSlimOverview.Limit]
 		}
 
-		vehiclesCards := generators.GenerateVehiclesCards(options.VehiclesSlimOverview, options.LayoutName, vehicles, stats.LastSession.Vehicles, printer)
+		vehiclesCards := generators.GenerateVehiclesCards(options.VehiclesSlimOverview, options.LayoutName, vehicles, stats.Snapshot.Regular.Vehicles, printer)
 		cards = append(cards, vehiclesCards...)
 	}
 
@@ -88,6 +93,6 @@ func CompilePlayerStatsCards(stats *api.PlayerRawStats, options *logic.LayoutOpt
 	}
 
 	response.Cards = cardBlock
-	response.LastBattle = stats.PlayerDetails.LastBattle
+	response.LastBattle = int(stats.Timestamp.Unix())
 	return response, nil
 }

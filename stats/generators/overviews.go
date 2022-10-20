@@ -2,11 +2,12 @@ package generators
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
+	"github.com/byvko-dev/am-core/stats/ratings/wn8/v1"
+	"github.com/byvko-dev/am-types/api/stats/v1"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
-	"github.com/byvko-dev/am-types/stats/v1"
 )
 
-func GenerateRatingOverviewCard(layout *logic.CardLayout, layoutName string, data *stats.PlayerRawStats, printer func(string) string) *block.Block {
+func GenerateRatingOverviewCard(layout *logic.CardLayout, layoutName string, data *stats.ResponsePayload, printer func(string) string) *block.Block {
 	var card block.Block
 	card.Style = layout.CardStyle
 	card.ContentType = block.ContentTypeBlocks
@@ -22,13 +23,13 @@ func GenerateRatingOverviewCard(layout *logic.CardLayout, layoutName string, dat
 	for _, b := range layout.Blocks {
 		switch b.ValueKind {
 		case logic.WN8OverOne:
-			block := WN8BlockFromStats(layoutName, b, data.SessionStats.SessionRating, data.PlayerDetails.CareerWN8, printer)
+			block := WN8BlockFromStats(layoutName, b, data.Session.Rating.Ratings[wn8.WN8], data.Snapshot.Rating.Ratings[wn8.WN8], printer)
 			if block != nil {
 				content = append(content, *block)
 			}
 
 		default:
-			block := BlockFromStats(layoutName, b, data.SessionStats.StatsRating, data.PlayerDetails.Stats.Rating, printer)
+			block := BlockFromStats(layoutName, b, data.Session.Rating.Total, data.Snapshot.Rating.Total, printer)
 			if block != nil {
 				content = append(content, *block)
 			}
@@ -44,7 +45,7 @@ func GenerateRatingOverviewCard(layout *logic.CardLayout, layoutName string, dat
 	return &card
 }
 
-func GenerateRandomOverviewCard(layout *logic.CardLayout, layoutName string, data *stats.PlayerRawStats, printer func(string) string) *block.Block {
+func GenerateRandomOverviewCard(layout *logic.CardLayout, layoutName string, data *stats.ResponsePayload, printer func(string) string) *block.Block {
 	var card block.Block
 	card.Style = layout.CardStyle
 	card.ContentType = block.ContentTypeBlocks
@@ -60,13 +61,13 @@ func GenerateRandomOverviewCard(layout *logic.CardLayout, layoutName string, dat
 	for _, b := range layout.Blocks {
 		switch b.ValueKind {
 		case logic.WN8OverOne:
-			block := WN8BlockFromStats(layoutName, b, data.SessionStats.SessionRating, data.PlayerDetails.CareerWN8, printer)
+			block := WN8BlockFromStats(layoutName, b, data.Session.Regular.Ratings[wn8.WN8], data.Snapshot.Regular.Ratings[wn8.WN8], printer)
 			if block != nil {
 				content = append(content, *block)
 			}
 
 		default:
-			block := BlockFromStats(layoutName, b, data.SessionStats.StatsAll, data.PlayerDetails.Stats.All, printer)
+			block := BlockFromStats(layoutName, b, data.Session.Regular.Total, data.Snapshot.Regular.Total, printer)
 			if block != nil {
 				content = append(content, *block)
 			}

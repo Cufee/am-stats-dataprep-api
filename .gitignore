@@ -4,3 +4,4 @@ tmp
 .env
 firebase.json
 .vscode
+vendor

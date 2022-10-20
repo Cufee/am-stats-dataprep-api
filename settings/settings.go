@@ -3,7 +3,7 @@ package settings
 import (
 	"time"
 
-	database "byvko.dev/repo/am-stats-dataprep-api/database/settings"
+	"byvko.dev/repo/am-stats-dataprep-api/database"
 	"github.com/byvko-dev/am-types/dataprep/settings/v1"
 	"go.mongodb.org/mongo-driver/bson"
 )
