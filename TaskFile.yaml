@@ -5,10 +5,10 @@ vars:
     sh: git rev-parse --short HEAD
 
 env:
-  BASE_APP_NAME: services-am-dataprep-api
+  BASE_APP_NAME: am-dataprep-api
   NAMESPACE: aftermath-services
 
-  REGISTRY: ghcr.io/byvko-dev
+  REGISTRY: us-east4-docker.pkg.dev/aftermath-327212/aftermath-images
   K8S_TYPE: deployment
 
 tasks:
