@@ -23,10 +23,10 @@ var wrapperStyle style.Style = style.Style{
 func Init() {
 	fmt.Println("fallback.Init()")
 
-	img, err := helpers.LoadImage("./assets/bg_ukraine.jpg")
+	img, err := helpers.LoadImage("assets/bg_ukraine.jpg")
 	if err != nil {
 		fmt.Println("fallback.Init() - error:", err)
-		img, err = helpers.LoadImage("./assets/bg_default.png")
+		img, err = helpers.LoadImage("assets/bg_default.png")
 	}
 	if err != nil {
 		panic(err)

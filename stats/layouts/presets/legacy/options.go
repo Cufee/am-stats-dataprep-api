@@ -23,9 +23,9 @@ var wrapperStyle style.Style = style.Style{
 func Init() {
 	fmt.Println("legacy.Init()")
 
-	img, err := helpers.LoadImage("./assets/bg_ukraine.jpg")
+	img, err := helpers.LoadImage("assets/bg_ukraine.jpg")
 	if err != nil {
-		img, err = helpers.LoadImage("./assets/bg_default.png")
+		img, err = helpers.LoadImage("assets/bg_default.png")
 	}
 	if err != nil {
 		panic(err)
