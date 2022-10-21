@@ -19,6 +19,7 @@ type CardLayout struct {
 
 type LayoutOptions struct {
 	LayoutName           string      `json:"name"`
+	VehiclesSort         string      `json:"vehiclesSort"`
 	WrapperStyle         style.Style `json:"wrapperStyle"`
 	AccountStatus        *CardLayout `json:"accountStatus"`
 	Notifications        *CardLayout `json:"notifications"`

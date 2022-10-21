@@ -5,6 +5,7 @@ import (
 
 	"byvko.dev/repo/am-stats-dataprep-api/localization"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/generators"
+	"byvko.dev/repo/am-stats-dataprep-api/stats/helpers"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/shared"
 
@@ -64,6 +65,8 @@ func CompilePlayerStatsCards(stats *api.ResponsePayload, options *logic.LayoutOp
 	for _, v := range stats.Session.Regular.Vehicles {
 		allVehicles = append(allVehicles, v)
 	}
+	allVehicles = helpers.SortTanks(allVehicles, options.VehiclesSort)
+
 	var slimVehiclesOffset int
 	if options.VehiclesFullOverview != nil && len(stats.Session.Regular.Vehicles) > 0 {
 		vehicles := allVehicles
@@ -71,7 +74,7 @@ func CompilePlayerStatsCards(stats *api.ResponsePayload, options *logic.LayoutOp
 			vehicles = vehicles[:options.VehiclesFullOverview.Limit]
 		}
 
-		vehiclesFull := generators.GenerateVehiclesCards(options.VehiclesFullOverview, options.LayoutName, vehicles, stats.Snapshot.Regular.Vehicles, printer)
+		vehiclesFull := generators.GenerateVehiclesCards(options.VehiclesFullOverview, options.LayoutName, vehicles, stats.Snapshot.Regular.Vehicles, locale, printer)
 		cards = append(cards, vehiclesFull...)
 		slimVehiclesOffset = len(vehiclesFull)
 	}
@@ -82,7 +85,7 @@ func CompilePlayerStatsCards(stats *api.ResponsePayload, options *logic.LayoutOp
 			vehicles = vehicles[:options.VehiclesSlimOverview.Limit]
 		}
 
-		vehiclesCards := generators.GenerateVehiclesCards(options.VehiclesSlimOverview, options.LayoutName, vehicles, stats.Snapshot.Regular.Vehicles, printer)
+		vehiclesCards := generators.GenerateVehiclesCards(options.VehiclesSlimOverview, options.LayoutName, vehicles, stats.Snapshot.Regular.Vehicles, locale, printer)
 		cards = append(cards, vehiclesCards...)
 	}
 

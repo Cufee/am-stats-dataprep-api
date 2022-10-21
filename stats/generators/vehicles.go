@@ -4,16 +4,17 @@ import (
 	"fmt"
 
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/logic"
+	"github.com/byvko-dev/am-core/helpers/strings"
 	"github.com/byvko-dev/am-core/stats/ratings/wn8/v1"
 	"github.com/byvko-dev/am-types/dataprep/block/v1"
 	"github.com/byvko-dev/am-types/stats/v3"
 )
 
-func GenerateVehiclesCards(layout *logic.CardLayout, layoutName string, session []stats.VehicleStats, allTime map[int]stats.VehicleStats, printer func(string) string) []block.Block {
+func GenerateVehiclesCards(layout *logic.CardLayout, layoutName string, session []stats.VehicleStats, allTime map[int]stats.VehicleStats, locale string, printer func(string) string) []block.Block {
 	cards := make([]block.Block, 0, len(session))
 	for _, vehicle := range session {
 		allTimeVehicle := allTime[vehicle.TankID]
-		card := generateSingleVehicleCard(layout, layoutName, vehicle, allTimeVehicle, printer)
+		card := generateSingleVehicleCard(layout, layoutName, vehicle, allTimeVehicle, locale, printer)
 		if card != nil {
 			cards = append(cards, *card)
 		}
@@ -21,11 +22,11 @@ func GenerateVehiclesCards(layout *logic.CardLayout, layoutName string, session 
 	return cards
 }
 
-func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, session, allTime stats.VehicleStats, printer func(string) string) *block.Block {
+func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, session, allTime stats.VehicleStats, locale string, printer func(string) string) *block.Block {
 	var card block.Block
 	card.Style = layout.CardStyle
 	card.ContentType = block.ContentTypeBlocks
-	layout.Title.String = fmt.Sprintf("%s %s", intToRoman(session.TankTier), session.TankName)
+	layout.Title.String = fmt.Sprintf("%s %s", intToRoman(session.TankTier), strings.Or(strings.Or(session.TankName[locale], session.TankName["en"]), "Unknown Tank"))
 	var cardRows []block.Block
 	cardRows = append(cardRows, layout.Title.ToBlock(nil))
 
@@ -37,7 +38,11 @@ func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, sess
 	for _, definition := range layout.Blocks {
 		switch definition.ValueKind {
 		case logic.WN8OverOne:
-			b := WN8BlockFromStats(layoutName, definition, session.Ratings[wn8.WN8], -1, printer)
+			ses, ok := session.Ratings[wn8.WN8]
+			if !ok {
+				ses = -1
+			}
+			b := WN8BlockFromStats(layoutName, definition, ses, -1, printer)
 			if b != nil {
 				content = append(content, *b)
 			}
@@ -81,6 +86,6 @@ func intToRoman(i int) string {
 	case 10:
 		return "X"
 	default:
-		return ""
+		return "?"
 	}
 }

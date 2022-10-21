@@ -23,7 +23,15 @@ func GenerateRatingOverviewCard(layout *logic.CardLayout, layoutName string, dat
 	for _, b := range layout.Blocks {
 		switch b.ValueKind {
 		case logic.WN8OverOne:
-			block := WN8BlockFromStats(layoutName, b, data.Session.Rating.Ratings[wn8.WN8], data.Snapshot.Rating.Ratings[wn8.WN8], printer)
+			ses, ok := data.Session.Rating.Ratings[wn8.WN8]
+			if !ok {
+				ses = -1
+			}
+			alt, ok := data.Snapshot.Rating.Ratings[wn8.WN8]
+			if !ok {
+				alt = -1
+			}
+			block := WN8BlockFromStats(layoutName, b, ses, alt, printer)
 			if block != nil {
 				content = append(content, *block)
 			}
@@ -61,7 +69,15 @@ func GenerateRandomOverviewCard(layout *logic.CardLayout, layoutName string, dat
 	for _, b := range layout.Blocks {
 		switch b.ValueKind {
 		case logic.WN8OverOne:
-			block := WN8BlockFromStats(layoutName, b, data.Session.Regular.Ratings[wn8.WN8], data.Snapshot.Regular.Ratings[wn8.WN8], printer)
+			ses, ok := data.Session.Regular.Ratings[wn8.WN8]
+			if !ok {
+				ses = -1
+			}
+			alt, ok := data.Snapshot.Regular.Ratings[wn8.WN8]
+			if !ok {
+				alt = -1
+			}
+			block := WN8BlockFromStats(layoutName, b, ses, alt, printer)
 			if block != nil {
 				content = append(content, *block)
 			}

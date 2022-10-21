@@ -5,6 +5,7 @@ import (
 	statsapi "byvko.dev/repo/am-stats-dataprep-api/stats-api"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/presets"
 	api "github.com/byvko-dev/am-types/api/generic/v1"
+	apitypes "github.com/byvko-dev/am-types/api/stats/v1"
 	types "github.com/byvko-dev/am-types/stats/v1"
 	"github.com/gofiber/fiber/v2"
 )
@@ -30,7 +31,11 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 	}
 
 	// Get stats
-	statsData, err := statsapi.GetStatsFromRequest(request)
+	var statsRequest apitypes.RequestPayload
+	statsRequest.AccountID = request.PID
+	statsRequest.Locale = request.Locale
+	statsRequest.Days = request.Days
+	statsData, err := statsapi.GetStatsFromRequest(statsRequest)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error getting stats",
