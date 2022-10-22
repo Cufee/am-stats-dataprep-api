@@ -2,18 +2,17 @@ package stats
 
 import (
 	"byvko.dev/repo/am-stats-dataprep-api/stats"
-	statsapi "byvko.dev/repo/am-stats-dataprep-api/stats-api"
+	statsApi "byvko.dev/repo/am-stats-dataprep-api/stats-api"
 	"byvko.dev/repo/am-stats-dataprep-api/stats/layouts/presets"
 	api "github.com/byvko-dev/am-types/api/generic/v1"
-	apitypes "github.com/byvko-dev/am-types/api/stats/v1"
-	types "github.com/byvko-dev/am-types/stats/v1"
+	apiTypes "github.com/byvko-dev/am-types/api/stats/v1"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GenerateStatsWithOptions(c *fiber.Ctx) error {
 	var response api.ResponseWithError
 
-	var request types.StatsRequest
+	var request apiTypes.RequestPayload
 	if err := c.BodyParser(&request); err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error parsing request",
@@ -22,20 +21,16 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	if (request.PID == 0) || (request.Realm == "") {
+	if request.AccountID == 0 {
 		response.Error = api.ResponseError{
 			Message: "Missing required parameters",
-			Context: "Player ID and Realm are required",
+			Context: "Account ID and Realm are required",
 		}
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
 	// Get stats
-	var statsRequest apitypes.RequestPayload
-	statsRequest.AccountID = request.PID
-	statsRequest.Locale = request.Locale
-	statsRequest.Days = request.Days
-	statsData, err := statsapi.GetStatsFromRequest(statsRequest)
+	statsData, err := statsApi.GetStatsFromRequest(request)
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error getting stats",
@@ -44,8 +39,8 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
 
-	options := presets.LoadOPresetByName(request.Preset)
-	completeCards, err := stats.CompilePlayerStatsCards(statsData, options, request.Locale, request.Style)
+	options := presets.LoadOPresetByName("legacy")
+	completeCards, err := stats.CompilePlayerStatsCards(statsData, options, request.Locale, "legacy")
 	if err != nil {
 		response.Error = api.ResponseError{
 			Message: "Error compiling stats",
@@ -53,8 +48,7 @@ func GenerateStatsWithOptions(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	completeCards.Style = request.Style
-
+	completeCards.Style = "legacy"
 	response.Data = completeCards
 	return c.JSON(response)
 }

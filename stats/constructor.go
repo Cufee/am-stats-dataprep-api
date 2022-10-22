@@ -63,7 +63,9 @@ func CompilePlayerStatsCards(stats *api.ResponsePayload, options *logic.LayoutOp
 
 	var allVehicles []types.VehicleStats
 	for _, v := range stats.Session.Regular.Vehicles {
-		allVehicles = append(allVehicles, v)
+		if v.Stats.Battles > 0 {
+			allVehicles = append(allVehicles, v)
+		}
 	}
 	allVehicles = helpers.SortTanks(allVehicles, options.VehiclesSort)
 
