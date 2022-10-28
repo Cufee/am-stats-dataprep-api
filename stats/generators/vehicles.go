@@ -26,7 +26,7 @@ func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, sess
 	var card block.Block
 	card.Style = layout.CardStyle
 	card.ContentType = block.ContentTypeBlocks
-	layout.Title.String = fmt.Sprintf("%s %s", intToRoman(session.TankTier), strings.Or(strings.Or(session.TankName[locale], session.TankName["en"]), "Unknown Tank"))
+	layout.Title.String = fmt.Sprintf("%s %s", intToRoman(session.TankTier), strings.Or(strings.Or(session.TankName[locale], session.TankName["en"]), fmt.Sprintf("Unknown (%v)", session.TankID)))
 	var cardRows []block.Block
 	cardRows = append(cardRows, layout.Title.ToBlock(nil))
 

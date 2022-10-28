@@ -18,9 +18,7 @@ var cardStyle = style.Style{
 }.Merge(shared.DefaultFont).Merge(shared.AlignVertical).Merge(shared.GrowX)
 
 var contentBase = style.Style{
-	// PaddingLeft:   1,
 	PaddingBottom: 0.5,
-	// PaddingRight:  -0.5,
 }.Merge(shared.DefaultFont)
 
 var vehicleSlimContentStyle = contentBase.Merge(style.Style{
@@ -31,4 +29,4 @@ var vehicleSlimContentStyle = contentBase.Merge(style.Style{
 
 var contentStyle = contentBase.Merge(shared.GrowX).Merge(shared.Gap25).Merge(style.Style{JustifyContent: style.JustifyContentSpaceBetween})
 var overviewTextStyle = fallback.TextMedium.Merge(fallback.TextMediumColor)
-var vehicleSlimCardStyle = cardStyle.Merge(style.Style{AlignItems: style.AlignItemsHorizontal, JustifyContent: style.JustifyContentSpaceBetween}).Merge(style.Style{PaddingLeft: 2, PaddingRight: 1.25, PaddingTop: 0.2, Gap: 1})
+var vehicleSlimCardStyle = cardStyle.Merge(style.Style{AlignItems: style.AlignItemsHorizontal, JustifyContent: style.JustifyContentSpaceBetween}).Merge(style.Style{PaddingLeft: 1.25, PaddingRight: 1.25, PaddingTop: 0.2, Gap: 1})

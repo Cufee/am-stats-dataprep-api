@@ -61,7 +61,7 @@ var (
 	WN8 = logic.Definition{
 		Name:      "wn8",
 		ValueKind: logic.WN8OverOne,
-		Fallback:  Accuracy,
+		// Fallback:  Accuracy, -- This breaks styling somehow?
 	}
 	WN8Detailed = logic.Definition{
 		Name:      "wn8Detailed",
