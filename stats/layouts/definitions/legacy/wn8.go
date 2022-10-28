@@ -41,10 +41,10 @@ func wn8(allTime, label bool) *logic.Layout {
 			Items: []logic.LayoutItem{
 				{ // Invisible icon to center things
 					AddCondition: logic.AllTimeValueOverNegOne,
-					Style:        smallIconSize,
+					Style:        baseIconSize,
 					Type:         logic.ItemTypeIcon,
 					Data: logic.Icon{
-						GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+						GetStyle: func(values logic.Values) style.Style { return baseIconSize },
 						GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
 					},
 				},

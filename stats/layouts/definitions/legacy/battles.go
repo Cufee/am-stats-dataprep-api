@@ -29,10 +29,8 @@ func battles(allTime, label bool) *logic.Layout {
 			Style: TextMedium.Merge(TextMediumColor),
 			Items: []logic.LayoutItem{
 				{
-					AddCondition: func(v logic.Values) bool {
-						return (allTime && logic.AllTimeOfOverZero(v)) || logic.SessionOfOverZero(v)
-					},
-					Type: logic.ItemTypeTemplate,
+					AddCondition: logic.AllTimeValueOverZero,
+					Type:         logic.ItemTypeTemplate,
 					Data: logic.Template{
 						Expression: fmt.Sprintf("%v", logic.AllTimeValue),
 						Format:     "%v",
