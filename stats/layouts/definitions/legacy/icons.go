@@ -40,8 +40,9 @@ func wn8IconStyleAndName(values logic.Values) (style.Style, string) {
 	var name string = shared.IconCircle
 
 	// Make icon invisible if there is no data
-	if val, ok := values[logic.SessionValue].(float64); !ok || val <= 0 {
-		return iconStyle, name
+	if val, ok := values[logic.SessionValue].(float64); !ok || val < 0 {
+		iconStyle.Color = shared.ColorNeutral
+		return iconStyle, shared.IconsLines[shared.IconDirectionHorizontal]
 	}
 
 	iconStyle.Color = getRatingColor(int(values[logic.SessionValue].(float64)))
@@ -50,7 +51,7 @@ func wn8IconStyleAndName(values logic.Values) (style.Style, string) {
 
 // GetRatingColor - Rating color calculator
 func getRatingColor(r int) color.RGBA {
-	if r > 0 && r < 301 {
+	if r >= 0 && r < 301 {
 		return color.RGBA{255, 0, 0, 180}
 	}
 	if r > 300 && r < 451 {
