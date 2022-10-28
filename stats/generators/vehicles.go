@@ -36,21 +36,9 @@ func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, sess
 	content := make([]block.Block, 0, len(layout.Blocks))
 
 	for _, definition := range layout.Blocks {
-		switch definition.ValueKind {
-		case logic.WN8OverOne:
-			ses, ok := session.Ratings[wn8.WN8]
-			if !ok {
-				ses = -1
-			}
-			b := WN8BlockFromStats(layoutName, definition, ses, -1, printer)
-			if b != nil {
-				content = append(content, *b)
-			}
-		default:
-			b := BlockFromStats(layoutName, definition, session.Stats, allTime.Stats, printer)
-			if b != nil {
-				content = append(content, *b)
-			}
+		b := contentFromDefinition(definition, layoutName, session, allTime, printer)
+		if b != nil {
+			content = append(content, *b)
 		}
 	}
 	if len(content) == 0 {
@@ -61,6 +49,27 @@ func generateSingleVehicleCard(layout *logic.CardLayout, layoutName string, sess
 	cardRows = append(cardRows, contentBlock)
 	card.Content = cardRows
 	return &card
+}
+
+func contentFromDefinition(definition logic.Definition, layoutName string, session, allTime stats.VehicleStats, printer func(string) string) *block.Block {
+	switch definition.ValueKind {
+	case logic.WN8OverOne:
+		ses, exists := session.Ratings[wn8.WN8]
+		if !exists {
+			if fallback, ok := definition.Fallback.(logic.Definition); ok {
+				return contentFromDefinition(fallback, layoutName, session, allTime, printer)
+			}
+			return nil
+		}
+		return WN8BlockFromStats(layoutName, definition, ses, -1, printer)
+
+	default:
+		block := BlockFromStats(layoutName, definition, session.Stats, allTime.Stats, printer)
+		if fallback, ok := definition.Fallback.(logic.Definition); block == nil && ok {
+			return contentFromDefinition(fallback, layoutName, session, allTime, printer)
+		}
+		return block
+	}
 }
 
 func intToRoman(i int) string {

@@ -32,14 +32,6 @@ func accuracy(allTime, label bool) *logic.Layout {
 					Parse:      shared.RoundFloat,
 				},
 			},
-			{ // Invisible icon to center things
-				AddCondition: logic.SessionOfOverZero,
-				Type:         logic.ItemTypeIcon,
-				Data: logic.Icon{
-					GetStyle: func(values logic.Values) style.Style { return smallIconSize },
-					GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
-				},
-			},
 		},
 	})
 	if allTime {
@@ -47,6 +39,14 @@ func accuracy(allTime, label bool) *logic.Layout {
 		layout.Rows = append(layout.Rows, logic.LayoutRow{
 			Style: TextMedium.Merge(TextMediumColor),
 			Items: []logic.LayoutItem{
+				{ // Invisible icon to center things
+					AddCondition: logic.AllTimeOfOverZero,
+					Type:         logic.ItemTypeIcon,
+					Data: logic.Icon{
+						GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+						GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
+					},
+				},
 				{
 					AddCondition: logic.AllTimeOfOverZero,
 					Type:         logic.ItemTypeTemplate,
@@ -65,6 +65,16 @@ func accuracy(allTime, label bool) *logic.Layout {
 		layout.Rows = append(layout.Rows, logic.LayoutRow{
 			Style: textSmall.Merge(textSmallColor),
 			Items: []logic.LayoutItem{
+				{ // Invisible icon to center things
+					AddCondition: func(v logic.Values) bool {
+						return (allTime && logic.AllTimeOfOverZero(v)) || logic.SessionOfOverZero(v)
+					},
+					Type: logic.ItemTypeIcon,
+					Data: logic.Icon{
+						GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+						GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
+					},
+				},
 				{
 					AddCondition: func(v logic.Values) bool {
 						return (allTime && logic.AllTimeOfOverZero(v)) || logic.SessionOfOverZero(v)

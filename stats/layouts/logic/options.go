@@ -7,6 +7,7 @@ import (
 type Definition struct {
 	Name      string `json:"name"`
 	ValueKind `json:"valueKind"`
+	Fallback  interface{} `json:"fallback"`
 }
 
 type CardLayout struct {

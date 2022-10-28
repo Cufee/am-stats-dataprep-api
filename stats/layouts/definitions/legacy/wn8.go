@@ -32,22 +32,22 @@ func wn8(allTime, label bool) *logic.Layout {
 					Format:     "%v",
 				},
 			},
-			{ // Invisible icon to center things
-				AddCondition: logic.SessionValueOverNegOne,
-				Style:        baseIconSize,
-				Type:         logic.ItemTypeIcon,
-				Data: logic.Icon{
-					GetStyle: func(values logic.Values) style.Style { return baseIconSize },
-					GetName:  func(values logic.Values) string { _, name := wn8IconStyleAndName(values); return name },
-				},
-			},
 		},
 	})
 	if allTime {
 		// All Time
 		layout.Rows = append(layout.Rows, logic.LayoutRow{
-			Style: TextMedium.Merge(TextMediumColor),
+			Style: TextMedium.Merge(TextMediumColor).Merge(shared.Gap15),
 			Items: []logic.LayoutItem{
+				{ // Invisible icon to center things
+					AddCondition: logic.AllTimeValueOverNegOne,
+					Style:        smallIconSize,
+					Type:         logic.ItemTypeIcon,
+					Data: logic.Icon{
+						GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+						GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
+					},
+				},
 				{
 					AddCondition: logic.AllTimeValueOverNegOne,
 					Type:         logic.ItemTypeTemplate,
@@ -62,8 +62,17 @@ func wn8(allTime, label bool) *logic.Layout {
 	// Label
 	if label {
 		layout.Rows = append(layout.Rows, logic.LayoutRow{
-			Style: textSmall.Merge(textSmallColor),
+			Style: textSmall.Merge(textSmallColor).Merge(shared.Gap15),
 			Items: []logic.LayoutItem{
+				{ // Invisible icon to center things
+					AddCondition: func(v logic.Values) bool { return logic.AllTimeValueOverNegOne(v) || logic.SessionValueOverNegOne(v) },
+					Style:        baseIconSize,
+					Type:         logic.ItemTypeIcon,
+					Data: logic.Icon{
+						GetStyle: func(values logic.Values) style.Style { return baseIconSize },
+						GetName:  func(values logic.Values) string { _, name := wn8IconStyleAndName(values); return name },
+					},
+				},
 				{
 					AddCondition: func(v logic.Values) bool { return logic.AllTimeValueOverNegOne(v) || logic.SessionValueOverNegOne(v) },
 					Style:        textSmall,

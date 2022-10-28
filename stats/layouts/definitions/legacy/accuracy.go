@@ -16,7 +16,7 @@ func accuracy(allTime, label bool) *logic.Layout {
 		Style: textLarge.Merge(shared.Gap25).Merge(textLargeColor),
 		Items: []logic.LayoutItem{
 			{
-				AddCondition: logic.SessionOfOverZero,
+				AddCondition: logic.SessionOfOverNegOne,
 				Type:         logic.ItemTypeIcon,
 				Data: logic.Icon{
 					GetStyle: func(values logic.Values) style.Style { style, _ := percentageIconStyleAndName(values); return style },
@@ -24,7 +24,7 @@ func accuracy(allTime, label bool) *logic.Layout {
 				},
 			},
 			{
-				AddCondition: logic.SessionOfOverZero,
+				AddCondition: logic.SessionOfOverNegOne,
 				Type:         logic.ItemTypeTemplate,
 				Data: logic.Template{
 					Expression: fmt.Sprintf("(%v / %v) * 100", logic.SessionValue, logic.SessionOf),
@@ -32,21 +32,21 @@ func accuracy(allTime, label bool) *logic.Layout {
 					Parse:      shared.RoundFloat,
 				},
 			},
-			{ // Invisible icon to center things
-				AddCondition: logic.SessionOfOverZero,
-				Type:         logic.ItemTypeIcon,
-				Data: logic.Icon{
-					GetStyle: func(values logic.Values) style.Style { return smallIconSize },
-					GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
-				},
-			},
 		},
 	})
 	if allTime {
 		// All Time
 		layout.Rows = append(layout.Rows, logic.LayoutRow{
-			Style: TextMedium.Merge(TextMediumColor),
+			Style: TextMedium.Merge(TextMediumColor).Merge(shared.Gap25),
 			Items: []logic.LayoutItem{
+				{ // Invisible icon to center things
+					AddCondition: logic.AllTimeOfOverZero,
+					Type:         logic.ItemTypeIcon,
+					Data: logic.Icon{
+						GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+						GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
+					},
+				},
 				{
 					AddCondition: logic.AllTimeOfOverZero,
 					Type:         logic.ItemTypeTemplate,
@@ -63,8 +63,18 @@ func accuracy(allTime, label bool) *logic.Layout {
 	// Label
 	if label {
 		layout.Rows = append(layout.Rows, logic.LayoutRow{
-			Style: textSmall.Merge(textSmallColor),
+			Style: textSmall.Merge(textSmallColor).Merge(shared.Gap25),
 			Items: []logic.LayoutItem{
+				{ // Invisible icon to center things
+					AddCondition: func(v logic.Values) bool {
+						return (allTime && logic.AllTimeOfOverZero(v)) || logic.SessionOfOverZero(v)
+					},
+					Type: logic.ItemTypeIcon,
+					Data: logic.Icon{
+						GetStyle: func(values logic.Values) style.Style { return smallIconSize },
+						GetName:  func(values logic.Values) string { _, name := percentageIconStyleAndName(values); return name },
+					},
+				},
 				{
 					AddCondition: func(v logic.Values) bool {
 						return (allTime && logic.AllTimeOfOverZero(v)) || logic.SessionOfOverZero(v)
